@@ -12,15 +12,16 @@ class Node (object):
             return
 
         for i, element in enumerate(self.keys):
-            if key >= element:
+            if key <= element:
                 #[:i] means array before i; [i:] means array after i
                 self.keys = self.keys[:i] + [key] + self.keys[i:]
                 self.values = self.values[:i] + [[value]] + self.values[i:]
-                print(self.keys)
+                print("<=",self.keys)
                 break
             else:
                 self.keys.append(key)
                 self.values.append([value])
+                print("tail",self.keys)
                 break
 
 class BTree (object):
@@ -45,4 +46,4 @@ class main():
     f = open("./file.txt", "r")
     tree = BTree(5)
     for x in f:
-        tree.root.insert(x.rstrip(), 0)
+        tree.root.insert(int(x.rstrip()), 0)
