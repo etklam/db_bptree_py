@@ -3,6 +3,7 @@ class Node (object):
         self.maxLength = maxLength
         self.keys = []
         self.values = []
+        self.childs = []
         self.leaf = True
 
     def insert(self, key, value):
@@ -16,20 +17,40 @@ class Node (object):
                 #[:i] means array before i; [i:] means array after i
                 self.keys = self.keys[:i] + [key] + self.keys[i:]
                 self.values = self.values[:i] + [[value]] + self.values[i:]
-                # print("<=",self.keys)
+
+                print("<=",self.keys)
                 break
             elif len(self.keys)-1 == i:
                 self.keys.append(key)
                 self.values.append([value])
-                # print("tail",self.keys)
-                break
-        return self
+                print("tail",self.keys)
+        
+        if self.leafFull():
+            self.split()
     
-    def listAllkeys(self):
-        print(self.keys)
+    def split(self):
+        # if(self.leafFull):
+            leftNode = Node(self.maxLength)
+            rightNode = Node(self.maxLength)
 
-    def leafFull():
-        if len(keys) >= maxLength:
+            leftNode.keys = self.keys[:2]
+            rightNode.keys = self.keys[3:]
+
+            #self.keys = self.keys[2] <-not work.
+            emptylist = []
+            emptylist.append(self.keys[2])
+            self.keys = emptylist
+            self.leaf = False
+            self.childs = [leftNode, rightNode]
+            print("rootNode:", self.keys)
+            print("leftNode:", leftNode.keys)
+            print("rightNode:", rightNode.keys)
+
+    def listAllkeys(self):
+        print("::",self.keys)
+
+    def leafFull(self):
+        if len(self.keys) >= self.maxLength:
             return True
         return False
 
@@ -39,7 +60,7 @@ class BTree (object):
 
     def insert(self, node, key):
         self.root.insert(node, key, value)
-        self.root.listAllkeys()
+        # root.listAllkeys()
     
     def search(self, node, key):
         for i, element in enumerate(node.keys):
