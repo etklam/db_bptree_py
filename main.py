@@ -18,12 +18,11 @@ class Node (object):
                 self.values = self.values[:i] + [[value]] + self.values[i:]
                 print("<=",self.keys)
                 break
-            else:
+            elif i == len(self.keys)-1:
                 self.keys.append(key)
                 self.values.append([value])
                 print("tail",self.keys)
                 break
-
 class BTree (object):
     def __init__(self, maxLength ):
         self.root = Node(maxLength)
