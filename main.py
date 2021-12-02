@@ -34,7 +34,7 @@ class Node (object):
             rightNode = Node(self.maxLength)
 
             leftNode.keys = self.keys[:2]
-            rightNode.keys = self.keys[3:]
+            rightNode.keys = self.keys[2:]
 
             #self.keys = self.keys[2] <-not work.
             emptylist = []
@@ -59,12 +59,13 @@ class BTree (object):
         self.root = Node(maxLength)
 
     def insert(self, node, key):
+
         self.root.insert(node, key, value)
         # root.listAllkeys()
     
     def search(self, node, key):
         for i, element in enumerate(node.keys):
-            if key < element:
+            if key <= element:
                 return i
         return i + 1
 
