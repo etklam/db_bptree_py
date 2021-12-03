@@ -50,6 +50,15 @@ class Node(object):
     def isFull(self):
         return len(self.keys) == self.maxLength - 1
 
+    def printAllChilds(self):
+        counter = 0
+        print("Layer: ",counter, self.keys)
+        while not isinstance(self, LeafNode):
+            counter+=1
+            childs = self.childs
+            for c in childs:
+                self.childsprintAllChilds(c)
+
 ################################################################################################
 class LeafNode(Node):
     def __init__(self, maxLength):
@@ -67,16 +76,16 @@ class LeafNode(Node):
         for i, element in enumerate(self.keys):
             if key == element:
                 # [:i] means array before i; [i:] means array after i
-                self.keys = self.keys[:i] + [key] + self.keys[i:]
+                # self.keys = self.keys[:i] + [key] + self.keys[i:]
                 self.childs = self.childs[:i] + [[child]] + self.childs[i:]
                 print("==", self.keys)
-                break
-            elif key <= element:
+                return
+            elif key < element:
                 # [:i] means array before i; [i:] means array after i
                 self.keys = self.keys[:i] + [key] + self.keys[i:]
                 self.childs = self.childs[:i] + [[child]] + self.childs[i:]
                 print("<", self.keys)
-                break
+                return
             elif len(self.keys) - 1 == i:
                 self.keys.append(key)
                 self.childs.append([child])
@@ -98,12 +107,12 @@ class LeafNode(Node):
         rightNode.prev = leftNode
         rightNode.next = rightNode.next
 
+        topNode.keys = [rightNode.keys[0]]
+        topNode.childs = [leftNode, rightNode]
+
         leftNode.keys = self.keys[:mid]
         leftNode.childs = self.childs[:mid]
         leftNode.next = rightNode
-
-        topNode.keys = [rightNode.keys[0]]
-        topNode.childs = [leftNode, rightNode]
 
         return topNode
 
@@ -161,7 +170,7 @@ class main():
     for x in f:
         tree.insert(int(x.rstrip()), 0)
 
-    # tree.root.show()
+    tree.root.printAllChilds()
 
 
 ################################################################################################
