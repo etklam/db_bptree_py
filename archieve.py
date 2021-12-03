@@ -1,13 +1,4 @@
-class main():
-    f = open("./file.txt", "r")
-    tree = BTree(5)
-    for x in f:
-        tree.insert(int(x.rstrip()), 0)
 
-    tree.root.show()
-
-
-################################################################################################
 
 class Node(object):
     def __init__(self, maxLength):
@@ -162,3 +153,13 @@ class BTree(object):
                 self.merge(parent, current, index)
                 current = parent
 
+class main():
+    f = open("./file.txt", "r")
+    tree = BTree(5)
+    for x in f:
+        tree.insert(int(x.rstrip()), 0)
+
+    tree.root.show()
+
+
+################################################################################################

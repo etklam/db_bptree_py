@@ -57,7 +57,7 @@ class Node(object):
             counter+=1
             childs = self.childs
             for c in childs:
-                self.childsprintAllChilds(c)
+                c.childsprintAllChilds(c)
 
 ################################################################################################
 class LeafNode(Node):
@@ -76,7 +76,7 @@ class LeafNode(Node):
         for i, element in enumerate(self.keys):
             if key == element:
                 # [:i] means array before i; [i:] means array after i
-                # self.keys = self.keys[:i] + [key] + self.keys[i:]
+                # self.keys = self.keys[:i] + [key] + self.keys[i:] <- key not dup!
                 self.childs = self.childs[:i] + [[child]] + self.childs[i:]
                 print("==", self.keys)
                 return
@@ -116,11 +116,18 @@ class LeafNode(Node):
 
         return topNode
 
-
 ################################################################################################
 class BTree(object):
     def __init__(self, maxLength):
         self.root = LeafNode(maxLength)
+
+    @staticmethod
+    def find(node: Node, key):
+        for i, item in enumerate(node.keys):
+            if key < item:
+                return node.childs[i], i
+            elif i + 1 == len(node.keys):
+                return node.childs[i + 1], i + 1  # return right-most node/pointer.
 
     def merge(self, parent, child, index):
         parent.childs.pop(index)
@@ -141,28 +148,47 @@ class BTree(object):
                 parent.childs += child.childs
                 break
 
+    # def insert(self, key, value):
+    #     print("inserting", key)
+    #     # init
+    #     current = self.root
+
+    #     ### only LeafNode can insert, LeafNode and Node have diff split functions
+    #     while not isinstance(current, LeafNode):
+    #         current, i = self.searchNode(current, key)
+
+    #     current.insert(key, value)
+
+    #     ### check if full
+    #     while current.isFull():
+    #         if current.isRoot():
+    #             top = current.split()
+    #             current = top
+    #         else:
+    #             parent = current.parent
+    #             current = current.split()
+    #             temp, index = current.searchNode(parent, current.keys[0])
+    #             self.merge(parent, current, index)
+    #             current = parent
     def insert(self, key, value):
-        print("inserting", key)
-        # init
-        current = self.root
+        node = self.root
 
-        ### only LeafNode can insert, LeafNode and Node have diff split functions
-        while not isinstance(current, LeafNode):
-            current, i = self.searchNode(current, key)
+        while not isinstance(node, LeafNode):  # While we are in internal nodes... search for leafs.
+            node, index = self.find(node, key)
 
-        current.insert(key, value)
+        # Node is now guaranteed a LeafNode!
+        node.insert(key, value)
 
-        ### check if full
-        while current.isFull():
-            if current.isRoot():
-                top = current.split()
-                current = top
+        while len(node.keys) == node.maxLength:  # 1 over full
+            if not node.isRoot():
+                parent = node.parent
+                node = node.split()  # Split & Set node as the 'top' node.
+                jnk, index = self.find(parent, node.keys[0])
+                self.merge(parent, node, index)
+                node = parent
             else:
-                parent = current.parent
-                current = current.split()
-                temp, index = current.searchNode(parent, current.keys[0])
-                self.merge(parent, current, index)
-                current = parent
+                node = node.split()  # Split & Set node as the 'top' node.
+                self.root = node  # Re-assign (first split must change the root!)
 
 class main():
     f = open("./file.txt", "r")
@@ -170,7 +196,9 @@ class main():
     for x in f:
         tree.insert(int(x.rstrip()), 0)
 
-    tree.root.printAllChilds()
+    print(tree.root.childs[0].next.keys)
+
+    #tree.root.printAllChilds()
 
 
 ################################################################################################
