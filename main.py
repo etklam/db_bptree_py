@@ -64,28 +64,30 @@ class BTree (object):
         self.root = Node(maxLength)
 
     def insert(self, node, key):
+
+        if self.root.leaf:
+            self.root.insert(node, 0)
+            return
+
         current = self.root
 
+        parent = None
         if current.leaf == False:
+            parent = current
+            current, index = self.searchNode(current, key)
+
             # if not leaf, try search through keys
 
-
-        # self.root.insert(node, key, value)
-        # root.listAllkeys()
-    
-    def search(self, node, key):
+    def searchNode(self, node, key):
+        # loop through a node, and find the key should be inserted
         for i, element in enumerate(node.keys):
             if key <= element:
-                return i
-        return i + 1
+                return node.childs[i], i
 
-    # def insert(self, key, value):
-    #     # scanning from root
-    #     parent = None
-    #     child = self.root
 class main():
     #f = open("./debug.txt", "r")
     f = open("./file.txt", "r")
     tree = BTree(5)
     for x in f:
-        tree.root.insert(int(x.rstrip()), 0)
+        tree.insert(int(x.rstrip()), 0)
+
