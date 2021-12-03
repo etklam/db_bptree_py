@@ -159,22 +159,37 @@ class BTree(object):
             else:
                 node = node.split()
                 self.root = node
-    @staticmethod
-    def printChilds(Node):
 
-        current = Node
-        while current.childs != None:
-            print(current.keys)
-            try:
-                while current.next != None :
-                    if (current == current.next):
-                        break
-                    else:
-                        # current = current.next
-                        print(current.keys)
-            except:
-                print(current.keys)
-                current = current.childs[0]
+
+    def printChilds(self):
+        node = self.root
+        layerCount = 1
+        print("root:", node.keys)
+        while not isinstance(node, LeafNode):
+            nextLayer = node.childs
+            node = node.childs[0]
+            printer = str(layerCount) 
+            printer += ":"
+            for child in nextLayer:
+                #print("Layer: ",layerCount, child.keys)
+                printer += str(child.keys)
+            print(printer)
+            
+        
+
+        # current = Node
+        # while current.childs != [] and hasattr(current, "childs"):
+        #     print(current.keys)
+        #     try:
+        #         while current.next != None :
+        #             if (current == current.next):
+        #                 break
+        #             else:
+        #                 # current = current.next
+        #                 print(current.keys)
+        #     except:
+        #         print(current.keys)
+        #         current = current.childs[0]
 
 class main():
     f = open("./file.txt", "r")
@@ -182,9 +197,17 @@ class main():
     for x in f:
         tree.insert(int(x.rstrip()), 0)
 
-    #print(tree.root.childs[0].next.keys)
-    tree.printChilds(tree.root)
+    tree.printChilds()
+    # print(tree.root.childs[0].next.keys)
+    # tree.printChilds()
     #tree.root.printAllChilds()
-
+    # quit = False
+    # while():
+    #     ui = input("command>> ")
+    #     if ui == "quit":
+    #         print("Bye Bye")
+    #         quit = True
+    #     else:
+    #         print("I don't know your command, please input again")
 
 ################################################################################################
