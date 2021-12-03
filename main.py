@@ -27,6 +27,8 @@ class Node (object):
                 self.values.append([value])
                 print("tail",self.keys)
 
+    def printNodeKeys(self):
+        return self.keys
         # if self.leafFull:
         #     self.split()
 
@@ -58,9 +60,9 @@ class Node (object):
             leftNode.parentPointer = self
             leftNode.rightPointer = rightNode
 
-            print("rootNode:", self.keys)
-            print("leftNode:", leftNode.keys)
-            print("rightNode:", rightNode.keys)
+            # print("rootNode:", self.keys)
+            # print("leftNode:", leftNode.keys)
+            # print("rightNode:", rightNode.keys)
 
     def printAllChildsKey(self):
         arr = []
@@ -98,7 +100,8 @@ class BTree (object):
         if current.leafFull():
             print('current is full')
             #if "self.leftPointer.leafFull()" or "self.leftpointer == None":
-            self.split()
+            current.split()
+        # self.printTree()
 
         
 
@@ -109,7 +112,14 @@ class BTree (object):
             if key < element:
                 return node.childs[i], i
 
-        return node.values[i + 1], i + 1
+        return node.childs[i + 1], i + 1
+
+    def printTree(self):
+        current = self.root
+        print("root:",current.keys)
+        # while not current.leaf:
+        #     for node in current.childs:
+        #         print(node.printNodeKeys)
 
 class main():
     f = open("./file.txt", "r")
@@ -117,4 +127,4 @@ class main():
     for x in f:
         tree.insert(int(x.rstrip()), 0)
 
-    tree.root.printAllChildsKey()
+    tree.printTree()
