@@ -116,11 +116,17 @@ class BTree (object):
 
     def printTree(self):
         current = self.root
+        counter = 0
         print("root:",current.keys)
-        # while not current.leaf:
-        #     for node in current.childs:
-        #         print(node.printNodeKeys)
-
+        counter+=1
+        while not current.leaf:
+            current = current.childs[0]
+            arr = []
+            arr.append(current.keys)
+            while current.rightPointer != None:
+                current = current.rightPointer
+                arr.append(current.keys)
+            print("Layer: ", counter,"have:", arr)
 class main():
     f = open("./file.txt", "r")
     tree = BTree(5)
