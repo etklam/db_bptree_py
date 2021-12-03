@@ -4,38 +4,13 @@ class Node (object):
         self.parent: Node = None
         self.childs = []
         self.keys = []
-        self.values = []
         self.leaf = True
         # self.parentPointer = None
         # self.rightPointer = None
         # self.leftPointer = None
 
-    def insert(self, key, value):
-        if self.keys == []:
-            self.keys.append(key)
-            self.values.append([value])
-            return self
-
-        for i, element in enumerate(self.keys):
-            if key == element:
-                #[:i] means array before i; [i:] means array after i
-                self.keys = self.keys[:i] + [key] + self.keys[i:]
-                self.values = self.values[:i] + [[value]] + self.values[i:]
-                print("==",self.keys)
-                break
-            elif key < element:
-                #[:i] means array before i; [i:] means array after i
-                self.keys = self.keys[:i] + [key] + self.keys[i:]
-                self.values = self.values[:i] + [[value]] + self.values[i:]
-                print("<",self.keys)
-                break
-            elif len(self.keys)-1 == i:
-                self.keys.append(key)
-                self.values.append([value])
-                print("tail",self.keys)
-
     def addKey(self, key):
-        ## insert function without value
+        ## insert function without child
         if self.keys == []:
             self.keys.append(key)
             return self
@@ -53,19 +28,19 @@ class Node (object):
                 break
             elif len(self.keys)-1 == i:
                 self.keys.append(key)
-                print("tail",self.keys)
+                print("tail", self.keys)
     
     def split(self):
         # newNode = self.Node(self.maxLength)
 
         mid = self.maxLength//2
 
-        # newNode.values = self.values[mid + 1:]
-        # self.values = self.values[:mid + 1]
+        # newNode.childs = self.childs[mid + 1:]
+        # self.childs = self.childs[:mid + 1]
         # newNode.keys = self.keys[mid+1:]
         # self.keys = self.keys[:mid]
 
-        # if len(newNode.values) > 0:
+        # if len(newNode.childs) > 0:
         #     newNode.leaf = False
         leftNode = Node(self.maxLength)
         rightNode = Node(self.maxLength)
@@ -95,7 +70,10 @@ class Node (object):
         # if self.leafFull:
         #     self.split()
     def isFull(self):
-        return (self.keys) >= self.maxLength -1
+        print("len: ", len([self.keys]))
+        if len([self.keys]) == self.maxLength:
+            return True
+        return False
 
     def isRoot(self):
         return self.parent is None
@@ -116,9 +94,9 @@ class Node (object):
 
     #             # un leaf the node
     #             self.leaf = False
-    #             leftNode.values = self.values[:2]
-    #             rightNode.values = self.values[2:]
-    #             self.values = []
+    #             leftNode.childs = self.childs[:2]
+    #             rightNode.childs = self.childs[2:]
+    #             self.childs = []
 
     #             #self.keys = self.keys[2] <-not work.
     #             emptylist = []
@@ -131,40 +109,38 @@ class Node (object):
     #             rightNode.leftPointer = leftNode
     #             leftNode.parentPointer = self
     #             leftNode.rightPointer = rightNode
-    def split(self):
+    # def split(self):
+    #     leftNode = Node(self.maxLength)
+    #     rightNode = Node(self.maxLength)
+    #
+    #     leftNode.keys = self.keys[:2]
+    #     rightNode.keys = self.keys[3:]
+    #
+    #     leftNode.childs = self.childs[:2]
+    #     rightNode.childs = self.childs[3:]
 
-
-        leftNode = Node(self.maxLength)
-        rightNode = Node(self.maxLength)
-        
-        leftNode.keys = self.keys[:2]
-        rightNode.keys = self.keys[3:]
-        
-        leftNode.values = self.values[:2]
-        rightNode.values = self.values[3:]
-
-        return self.keys[2], leftNode, rightNode
+    #     return self.keys[2], leftNode, rightNode
 
             # print("rootNode:", self.keys)
             # print("leftNode:", leftNode.keys)
             # print("rightNode:", rightNode.keys)
 
-    def moveToLeft(self):
-        # move the smallest value from right node to left node
-        # update the keys in parent Node
-        parent = self.parentPointer
-        leftNode = self.leftPointer
-        keyToMove = self.keys.pop(0)
-        valueToMove = self.values.pop(0)
-
-        # add to left tail
-        leftNode.keys.append(keyToMove)
-        leftNode.values.append(valueToMove)
-
-        # update key on parent
-        for key in parent.keys:
-            if key == keyToMove:
-                key = self.keys[0]
+    # def moveToLeft(self):
+    #     # move the smallest child from right node to left node
+    #     # update the keys in parent Node
+    #     parent = self.parentPointer
+    #     leftNode = self.leftPointer
+    #     keyToMove = self.keys.pop(0)
+    #     childToMove = self.childs.pop(0)
+    #
+    #     # add to left tail
+    #     leftNode.keys.append(keyToMove)
+    #     leftNode.childs.append(childToMove)
+    #
+    #     # update key on parent
+    #     for key in parent.keys:
+    #         if key == keyToMove:
+    #             key = self.keys[0]
 
     def printAllChildsKey(self):
         arr = []
@@ -186,49 +162,128 @@ class LeafNode(Node):
         self.prev: LeafNode = None
         self.next: LeafNode = None
 
+    def insert(self, key, child):
+        if self.keys == []:
+            self.keys.append(key)
+            self.childs.append([child])
+            return self
+
+        for i, element in enumerate(self.keys):
+            if key == element:
+                #[:i] means array before i; [i:] means array after i
+                self.keys = self.keys[:i] + [key] + self.keys[i:]
+                self.childs = self.childs[:i] + [[child]] + self.childs[i:]
+                print("==",self.keys)
+                break
+            elif key < element:
+                #[:i] means array before i; [i:] means array after i
+                self.keys = self.keys[:i] + [key] + self.keys[i:]
+                self.childs = self.childs[:i] + [[child]] + self.childs[i:]
+                print("<",self.keys)
+                break
+            elif len(self.keys)-1 == i:
+                self.keys.append(key)
+                self.childs.append([child])
+                print("tail",self.keys)
+
+    def split(self):
+
+        ### use self as leftNode is more ez to handle
+        topNode = Node(self.maxLength)
+        leftNode = self
+        rightNode = LeafNode(self.maxLength)
+
+        mid = self.maxLength // 2
+
+        rightNode.parent = leftNode.parent = topNode
+
+        rightNode.keys = self.keys[mid:]
+        rightNode.childs = self.childs[mid:]
+        rightNode.prev = leftNode
+        rightNode.next = rightNode.next
+
+        leftNode.keys = self.keys[:mid]
+        leftNode.childs = self.childs[:mid]
+        leftNode.next = rightNode
+
+        topNode.keys = rightNode.keys[0]
+        topNode.childs = [leftNode, rightNode]
+
+        return topNode
+        # topNode = Node(self.maxLength)
+        # leftNode = LeafNode(self.maxLength)
+        # rightNode = self
+        #
+        # mid = self.maxLength//2
+        #
+        # self.parent = leftNode.parent = topNode
+        #
+        # leftNode.keys = self.keys[:mid]
+        # leftNode.childs = self.childs[:mid]
+        # leftNode.next = rightNode
+        #
+        # # right node is self
+        # rightNode.keys = self.keys[mid:+1]
+        # rightNode.childs = self.childs[mid:+1]
+        #
+        # top.keys = [right.keys[0]]
+        # top.childs = [leftNode, rightNode]
 
 
 class BTree (object):
     def __init__(self, maxLength ):
-        self.root = Node(maxLength)
+        self.root = LeafNode(maxLength)
 
     def insert(self, key, value):
         print("inserting", key)
         # init
         current = self.root
-        if current.leaf == True:
-            current.insert(key, value)
-            if current.leafFull():
-                print('current is full')
-            #if "self.leftPointer.leafFull()" or "self.leftpointer == None":
-                pivot, leftNode, rightNode = current.split()
-                current = Node(current.maxLength)
-                current.leaf = False
-                current.addKey(pivot)
-                current.childs[leftNode,rightNode]
-            return
+
+
+        ### only LeafNode can insert, LeafNode and Node have diff split functions
+        while not isinstance(current, LeafNode):
+            current, i = self.searchNode(current, key)
+
+        ### check if full
+        while current.isFull():
+            top = current.split()
+            current = top
+
+        # if current.leaf == True:
+        #     current.insert(key, child)
+        #     if current.leafFull():
+        #         print('current is full')
+        #     #if "self.leftPointer.leafFull()" or "self.leftpointer == None":
+        #         pivot, leftNode, rightNode = current.split()
+        #         current = Node(current.maxLength)
+        #         current.leaf = False
+        #         current.addKey(pivot)
+        #         current.childs[leftNode, rightNode]
+        #     return
         # end init
+        current.insert(key, value)
+
         while current.leaf == False:
             # return the next current node
             current, i = self.searchNode(current, key)
 
-        current.insert(key, value)
         # current.insert(key, value)
+        # current.insert(key, child)
 
-        if current.leafFull():
-            print('current is full')
-            try:
-                isEmpty = current.leftPointer.isEmpty()
-                leftFull = current.leftPointer.leafFull()
-            except:
-                print("current is root")
-                current.split()
-                return
+        # if current.leafFull():
+        #     print('current is full')
+        #     try:
+        #         isEmpty = current.leftPointer.isEmpty()
+        #         leftFull = current.leftPointer.leafFull()
+        #     except:
+        #         print("current is root")
+        #         current.split()
+        #         return
 
-            if(leftFull):
-                current.split()
-            else:
-                current.moveToLeft()
+        #     if(leftFull):
+        #         current.split()
+        #     else:
+        #         current.moveToLeft()
 
 
     def searchNode(self, node, key):
@@ -253,6 +308,7 @@ class BTree (object):
                 current = current.rightPointer
                 arr.append(current.keys)
             print("Layer: ", counter,"have:", arr)
+
 class main():
     f = open("./file.txt", "r")
     tree = BTree(5)
