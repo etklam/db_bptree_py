@@ -5,9 +5,9 @@ class Node (object):
         self.values = []
         self.childs = []
         self.leaf = True
-        self.parentPointer = None
-        self.rightPointer = None
-        self.leftPointer = None
+        self.parentPointer = Node(maxLength)
+        self.rightPointer = Node(maxLength)
+        self.leftPointer = Node(maxLength)
 
     def insert(self, key, value):
         if self.keys == []:
@@ -26,6 +26,11 @@ class Node (object):
                 self.keys.append(key)
                 self.values.append([value])
                 print("tail",self.keys)
+
+    def isEmpty(self):
+        if len(self.keys) == 0:
+            return True
+        return False
 
     def printNodeKeys(self):
         return self.keys
@@ -64,6 +69,23 @@ class Node (object):
             # print("leftNode:", leftNode.keys)
             # print("rightNode:", rightNode.keys)
 
+    def moveToLeft(self):
+        # move the smallest value from right node to left node
+        # update the keys in parent Node
+        parent = self.parentPointer
+        leftNode = self.leftPointer
+        keyToMove = self.keys.pop(0)
+        valueToMove = self.values.pop(0)
+
+        # add to left tail
+        leftNode.keys.append(keyToMove)
+        leftNode.values.append(valueToMove)
+
+        # update key on parent
+        for key in parent.keys:
+            if key == keyToMove:
+                key = self.keys[0]
+
     def printAllChildsKey(self):
         arr = []
         arr.append(self.keys)
@@ -99,9 +121,15 @@ class BTree (object):
 
         if current.leafFull():
             print('current is full')
-            #if "self.leftPointer.leafFull()" or "self.leftpointer == None":
-            current.split()
-        # self.printTree()
+            if current.leftPointer.isEmpty():
+                current.split()
+            elif current.leftPointer.leafFull:
+                current.split()
+            else:
+                current.moveToLeft()
+
+
+
 
         
 
