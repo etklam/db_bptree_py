@@ -50,14 +50,6 @@ class Node(object):
     def isFull(self):
         return len(self.keys) == self.maxLength - 1
 
-    def printAllChilds(self):
-        counter = 0
-        print("Layer: ",counter, self.keys)
-        while not isinstance(self, LeafNode):
-            counter+=1
-            childs = self.childs
-            for c in childs:
-                c.childsprintAllChilds(c)
 
 ################################################################################################
 class LeafNode(Node):
@@ -105,8 +97,8 @@ class LeafNode(Node):
         rightNode.keys = self.keys[mid:]
         rightNode.childs = self.childs[mid:]
         rightNode.prev = leftNode
-        rightNode.next = rightNode.next
-
+        if rightNode.next != None:
+            rightNode.next = rightNode.next
         topNode.keys = [rightNode.keys[0]]
         topNode.childs = [leftNode, rightNode]
 
@@ -147,6 +139,7 @@ class BTree(object):
                 parent.keys += [pivot]
                 parent.childs += child.childs
                 break
+    
 
     # def insert(self, key, value):
     #     print("inserting", key)
@@ -170,25 +163,42 @@ class BTree(object):
     #             temp, index = current.searchNode(parent, current.keys[0])
     #             self.merge(parent, current, index)
     #             current = parent
+
     def insert(self, key, value):
         node = self.root
 
-        while not isinstance(node, LeafNode):  # While we are in internal nodes... search for leafs.
+        while not isinstance(node, LeafNode):  
             node, index = self.find(node, key)
 
-        # Node is now guaranteed a LeafNode!
+
         node.insert(key, value)
 
-        while len(node.keys) == node.maxLength:  # 1 over full
+        while len(node.keys) == node.maxLength:
             if not node.isRoot():
                 parent = node.parent
-                node = node.split()  # Split & Set node as the 'top' node.
+                node = node.split()
                 jnk, index = self.find(parent, node.keys[0])
                 self.merge(parent, node, index)
                 node = parent
             else:
-                node = node.split()  # Split & Set node as the 'top' node.
-                self.root = node  # Re-assign (first split must change the root!)
+                node = node.split()
+                self.root = node
+    @staticmethod
+    def printChilds(Node):
+
+        current = Node
+        while current.childs != None:
+            print(current.keys)
+            try:
+                while current.next != None :
+                    if (current == current.next):
+                        break
+                    else:
+                        # current = current.next
+                        print(current.keys)
+            except:
+                print(current.keys)
+                current = current.childs[0]
 
 class main():
     f = open("./file.txt", "r")
@@ -196,8 +206,8 @@ class main():
     for x in f:
         tree.insert(int(x.rstrip()), 0)
 
-    print(tree.root.childs[0].next.keys)
-
+    #print(tree.root.childs[0].next.keys)
+    tree.printChilds(tree.root)
     #tree.root.printAllChilds()
 
 
