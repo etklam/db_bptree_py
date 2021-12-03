@@ -139,30 +139,6 @@ class BTree(object):
                 parent.keys += [pivot]
                 parent.childs += child.childs
                 break
-    
-
-    # def insert(self, key, value):
-    #     print("inserting", key)
-    #     # init
-    #     current = self.root
-
-    #     ### only LeafNode can insert, LeafNode and Node have diff split functions
-    #     while not isinstance(current, LeafNode):
-    #         current, i = self.searchNode(current, key)
-
-    #     current.insert(key, value)
-
-    #     ### check if full
-    #     while current.isFull():
-    #         if current.isRoot():
-    #             top = current.split()
-    #             current = top
-    #         else:
-    #             parent = current.parent
-    #             current = current.split()
-    #             temp, index = current.searchNode(parent, current.keys[0])
-    #             self.merge(parent, current, index)
-    #             current = parent
 
     def insert(self, key, value):
         node = self.root
@@ -177,7 +153,7 @@ class BTree(object):
             if not node.isRoot():
                 parent = node.parent
                 node = node.split()
-                jnk, index = self.find(parent, node.keys[0])
+                temp, index = self.find(parent, node.keys[0])
                 self.merge(parent, node, index)
                 node = parent
             else:
