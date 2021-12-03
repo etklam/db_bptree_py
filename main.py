@@ -34,7 +34,15 @@ class Node (object):
             child.parent = rightNode
 
         return self
- 
+
+    def searchNode(self, node, key):
+        # loop through a node, and find the key should be inserted
+        for i, element in enumerate(node.keys):
+            print("compairing", key, element)
+            if key < element:
+                return node.childs[i], i
+
+        return node.childs[i + 1], i + 1
 
     def isEmpty(self):
         if len(self.keys) == 0:
@@ -46,7 +54,6 @@ class Node (object):
         # if self.leafFull:
         #     self.split()
     def isFull(self):
-        print("len: ", type(self.keys))
         if len(self.keys) == self.maxLength:
             return True
         return False
@@ -132,20 +139,48 @@ class BTree (object):
     def __init__(self, maxLength ):
         self.root = LeafNode(maxLength)
 
+    def merge(parent, child, index):
+        parent.childs.pop(index)
+        pivot = child.keys[0]
+
+        for c in child.childs:
+            if isinstance(c, Node):
+                c.parent = parent
+
+        for i, item in enumerate(parent.keys):
+            if pivot < item:
+                parent.keys = parent.keys[:i] + [pivot] + parent.keys[i:]
+                parent.childs = parent.childs[:i] + child.childs + parent.childs[i:]
+                break
+
+            elif i + 1 == len(parent.keys):
+                parent.keys += [pivot]
+                parent.childs += child.childs
+                break
+
+
     def insert(self, key, value):
         print("inserting", key)
         # init
         current = self.root
 
-
         ### only LeafNode can insert, LeafNode and Node have diff split functions
         while not isinstance(current, LeafNode):
             current, i = self.searchNode(current, key)
 
+        current.insert(key, value)
+
         ### check if full
         while current.isFull():
-            top = current.split()
-            current = top
+            if current.isRoot():
+                top = current.split()
+                current = top
+            else:
+                parent = current.parent
+                current = current.split()
+                temp, index = current.searchNode(parent, current.keys[0])
+                current.merge(parent, current, index)
+                current = parent
 
         # current.insert(key, value)
 
@@ -172,21 +207,14 @@ class BTree (object):
         #         current.moveToLeft()
 
 
-    def searchNode(self, node, key):
-        # loop through a node, and find the key should be inserted
-        for i, element in enumerate(node.keys):
-            print("compairing", key, element)
-            if key < element:
-                return node.childs[i], i
 
-        return node.childs[i + 1], i + 1
 
     def printTree(self):
         current = self.root
         counter = 0
-        print("root:",current.keys)
+        print("root:", current.keys)
         counter+=1
-        while not current.leaf:
+        while not isinstance(current, LeafNode):
             current = current.childs[0]
             arr = []
             arr.append(current.keys)
