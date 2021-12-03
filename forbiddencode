@@ -1,0 +1,114 @@
+# def addKey(self, key):
+#     ## insert function without child
+#     if self.keys == []:
+#         self.keys.append(key)
+#         return self
+#
+#     for i, element in enumerate(self.keys):
+#         if key == element:
+#             #[:i] means array before i; [i:] means array after i
+#             self.keys = self.keys[:i] + [key] + self.keys[i:]
+#             print("==",self.keys)
+#             break
+#         elif key < element:
+#             #[:i] means array before i; [i:] means array after i
+#             self.keys = self.keys[:i] + [key] + self.keys[i:]
+#             print("<",self.keys)
+#             break
+#         elif len(self.keys)-1 == i:
+#             self.keys.append(key)
+#             print("tail", self.keys)
+
+# def split(self):
+#     # if(self.leafFull):
+#         try:
+#             # no parentNode means it is a root node
+#             parentNode = self.parentPointer
+#         except:
+#             leftNode = Node(self.maxLength)
+#             rightNode = Node(self.maxLength)
+
+#             leftNode.keys = self.keys[:2]
+#             rightNode.keys = self.keys[2:]
+
+#             # un leaf the node
+#             self.leaf = False
+#             leftNode.childs = self.childs[:2]
+#             rightNode.childs = self.childs[2:]
+#             self.childs = []
+
+#             #self.keys = self.keys[2] <-not work.
+#             emptylist = []
+#             emptylist.append(self.keys[2])
+#             self.keys = emptylist
+
+#             # adding pointers to each node
+#             self.childs = [leftNode, rightNode]
+#             rightNode.parentPointer = self
+#             rightNode.leftPointer = leftNode
+#             leftNode.parentPointer = self
+#             leftNode.rightPointer = rightNode
+# def split(self):
+#     leftNode = Node(self.maxLength)
+#     rightNode = Node(self.maxLength)
+#
+#     leftNode.keys = self.keys[:2]
+#     rightNode.keys = self.keys[3:]
+#
+#     leftNode.childs = self.childs[:2]
+#     rightNode.childs = self.childs[3:]
+
+#     return self.keys[2], leftNode, rightNode
+
+# print("rootNode:", self.keys)
+# print("leftNode:", leftNode.keys)
+# print("rightNode:", rightNode.keys)
+
+# def moveToLeft(self):
+#     # move the smallest child from right node to left node
+#     # update the keys in parent Node
+#     parent = self.parentPointer
+#     leftNode = self.leftPointer
+#     keyToMove = self.keys.pop(0)
+#     childToMove = self.childs.pop(0)
+#
+#     # add to left tail
+#     leftNode.keys.append(keyToMove)
+#     leftNode.childs.append(childToMove)
+#
+#     # update key on parent
+#     for key in parent.keys:
+#         if key == keyToMove:
+#             key = self.keys[0]
+
+# topNode = Node(self.maxLength)
+# leftNode = LeafNode(self.maxLength)
+# rightNode = self
+#
+# mid = self.maxLength//2
+#
+# self.parent = leftNode.parent = topNode
+#
+# leftNode.keys = self.keys[:mid]
+# leftNode.childs = self.childs[:mid]
+# leftNode.next = rightNode
+#
+# # right node is self
+# rightNode.keys = self.keys[mid:+1]
+# rightNode.childs = self.childs[mid:+1]
+#
+# top.keys = [right.keys[0]]
+# top.childs = [leftNode, rightNode]
+
+# if current.leaf == True:
+#     current.insert(key, child)
+#     if current.leafFull():
+#         print('current is full')
+#     #if "self.leftPointer.leafFull()" or "self.leftpointer == None":
+#         pivot, leftNode, rightNode = current.split()
+#         current = Node(current.maxLength)
+#         current.leaf = False
+#         current.addKey(pivot)
+#         current.childs[leftNode, rightNode]
+#     return
+# end init
