@@ -36,11 +36,16 @@ class Node (object):
             leftNode.keys = self.keys[:2]
             rightNode.keys = self.keys[2:]
 
+            # un leaf the node
+            self.leaf = False
+            leftNode.values = self.values[:2]
+            rightNode.values = self.values[2:]
+            self.values = []
+
             #self.keys = self.keys[2] <-not work.
             emptylist = []
             emptylist.append(self.keys[2])
             self.keys = emptylist
-            self.leaf = False
             self.childs = [leftNode, rightNode]
             print("rootNode:", self.keys)
             print("leftNode:", leftNode.keys)
@@ -59,8 +64,13 @@ class BTree (object):
         self.root = Node(maxLength)
 
     def insert(self, node, key):
+        current = self.root
 
-        self.root.insert(node, key, value)
+        if current.leaf == False:
+            # if not leaf, try search through keys
+
+
+        # self.root.insert(node, key, value)
         # root.listAllkeys()
     
     def search(self, node, key):
