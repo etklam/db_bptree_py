@@ -1,5 +1,14 @@
 from typing import ValuesView
 
+###############################
+###
+###
+###
+###
+###
+###
+###############################
+
 
 class Node:
     def __init__(self, maxLength=5):
@@ -17,18 +26,18 @@ class Node:
         print("insert:", key)
         
         if (self.values):
-            temp1 = self.values
-            for i in range(len(temp1)):
-                if (value == temp1[i]):
+            temp = self.values
+            for i in range(len(temp)):
+                if (value == temp[i]):
                     self.keys[i].append(key)
                     print("after insert:", self.keys)
                     break
-                elif (value < temp1[i]):
+                elif (value < temp[i]):
                     self.values = self.values[:i] + [value] + self.values[i:]
                     self.keys = self.keys[:i] + [[key]] + self.keys[i:]
                     print("after insert:", self.keys)
                     break
-                elif (i + 1 == len(temp1)):
+                elif (i + 1 == len(temp)):
                     self.values.append(value)
                     self.keys.append([key])
                     print("after insert:", self.keys)
@@ -54,6 +63,16 @@ class Node:
         print("right:", right.keys)
         print("key", right.values[0])
         return left,right.keys[0], right
+    
+    def printALayer(self):
+        current = self
+        token = ":::"
+        token += str(current.values)
+        while current.next!=None:
+            current = current.next
+            token += str(current.values)
+        token += ":::"
+        print(token)
 
 class BPTree:
     def __init__(self, maxLength=5):
@@ -86,9 +105,7 @@ class BPTree:
             if(temp[i] == left.keys):
                 parent.values = parent.values[:i] + [key] + parent.values[i:]
                 parent.keys = parent.keys[:i+1]+[key] + parent.values[i+1:]
-        print("splited parent", parent.keys)
-
-
+        # print("splited parent", parent.keys)
 
     def search(self, value):
         current = self.root
@@ -105,14 +122,51 @@ class BPTree:
                 elif (i + 1 == len(current.values)):
                     current = current.keys[i + 1]
                     break
-
         return current
 
+    def printTree(self):
+        current = self.root
+        # print("root:", self.root.values)
+        layer = self.countLayer()
+        print(layer)
+        current.printALayer()
+        for i in range(layer):
+            current = current.keys[0]
+            current.printALayer()
+       
+    def countLayer(self):
+        current = self.root
+        counter = 0
+        while not current.isLeaf:
+            current = current.keys[0]
+            counter += 1
+        return counter
+    
+    # def allLeftNode(self):
+    #     current = self.root
+    #     counter = 0
+    #     while not current.isLeaf:
+    #         current = current.keys[0]
+    #         counter +=1
+
+    #     return counter
 
 
+            
 
 class main():
     f = open("./test.txt", "r")
     tree = BPTree(5)
     for x in f:
         tree.insert(int(x.rstrip()), int(x.rstrip()))
+
+    current = tree.root.keys[0].printALayer()
+
+    tree.printTree()
+    # print(current.values)
+    # while current.next!=None:
+    #     current = current.next
+    #     print(current.values)
+    # print("testing:", tree.root.keys[0].next.next.values)
+    # print("testing:", tree.root.keys[1].next.next.next.values)
+    # tree.printTree()
