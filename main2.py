@@ -186,15 +186,38 @@ class BPTree:
                     #     parent.values[parent.values.index(value)] = leaf.values[0]
                     self.updateParentAfterDel(leaf, value)
                     mid = leaf.maxLength // 2
-                    # if len(leaf.values < mid):
-
-
+                    ### deletion rules
+                    #1. borrow from left
+                    #2. Merge with left
+                    #3. Borrow from right, only the left most Node can borrow and merge from right
+                    #4. Merge with right, only the left most Node can borrow and merge from right
+                    ###
+                    if len(leaf.values) < mid:
+                        self.borrowFromLeft(leaf)
                         
         if delSuccess == False:
             print("Value not found.")
 
-    # def borrowFromLeft(self, node):
-    #     node.parent
+    def borrowFromLeft(self, node):
+        mid = node.maxLength //2
+        prev = node.prev
+        if prev != None:
+            if len(prev.values) > mid:
+                borrowV = prev.values.pop(-1)
+                borrowK = prev.keys.pop(-1)
+                node.values.insert(0,borrowV)
+                node.keys.insert(0,borrowK)
+                self.updateParentAfterDel(node, borrowV)
+            else:
+                print("cannot borrow!")
+
+    def updateParentAfterBorrow(self, node, value):
+        if node.parent !=None:
+            parent = node.parent
+            if value in parent.values:
+                parent.values[parent.values.index(value)] = value
+                if parent.parent != None:
+                    self.updateParent(parent, value)
 
     def updateParentAfterDel(self, updatedNode, value):
         # while updatedNode.parent != None:
