@@ -1,44 +1,65 @@
 
 
 class Node(object):
-    def __init__(self, maxLength):
+    def __init__(self, parent= None, maxLength= 5):
         self.maxLength = maxLength
-        self.parent: Node = None
+        self.parent:Node= parent
         self.childs = []
         self.keys = []
 
-    def searchNode(self, node, key):
-        # loop through a node, and find the key should be inserted
-        for i, element in enumerate(node.keys):
-            print("compairing", key, element)
-            if key < element:
-                return node.childs[i], i
+    # def searchNode(self, node, key):
+    #     # loop through a node, and find the key should be inserted
+    #     for i, element in enumerate(node.keys):
+    #         print("compairing", key, element)
+    #         if key < element:
+    #             return node.childs[i], i
 
-        return node.childs[i + 1], i + 1
+    #     return node.childs[i+1], i + 1
+
+    def __getitem__(self, item):
+        return self.childs[self.find(item)]
+
+    def index(self, key):
+        # return the index of a key in a index, if not find, return the length of the key array, which is the last +1 on an array
+        for i, item in enumerate(self.keys):
+            if key < item:
+                return i
+
+        return len(self.keys)
 
     def split(self):
+
+        ## Split for 
         # newNode = self.Node(self.maxLength)
 
         mid = self.maxLength // 2
+        right = self # name it, it is easier to read
+        left = Node(self.maxLength)
+        left.parent = self.parent
 
-        leftNode = Node(self.maxLength)
-        rightNode = Node(self.maxLength)
+        left.keys = self.keys[:mid]
+        left.childs = self.childs[:mid + 1]
 
-        leftNode.keys = self.keys[:mid]
-        rightNode.keys = self.keys[mid + 1:]
+        for child in left.childs:
+            child.parent = left
 
-        self.childs = [leftNode, rightNode]
-        self.keys = [rightNode.keys[0]]
+        newKey = self.keys[mid]
 
-        for child in leftNode.childs:
-            child.parent = leftNode
+        right.keys = self.keys[mid+1:]
+        right.childs = self.childs[mid+1:]
 
-        for child in rightNode.childs:
-            child.parent = rightNode
+        # self.childs = [leftNode, rightNode]
+        # self.keys = [rightNode.keys[0]]
 
-        return self
+        # for child in leftNode.childs:
+        #     child.parent = leftNode
 
-    ################################################################################################
+        # for child in rightNode.childs:
+        #     child.parent = rightNode
+
+        return newKey, [left, right]
+
+################################################################################################
     def isEmpty(self):
         if len(self.keys) == 0:
             return True
@@ -53,16 +74,37 @@ class Node(object):
 
 ################################################################################################
 class LeafNode(Node):
-    def __init__(self, maxLength):
-        super().__init__(maxLength)
+    def __init__(self, parent=None,prevNode=None,nextNode=None, maxLength=5):
+        super().__init__(parent)
+        # self.parent: Node = None
+        # self.prev: LeafNode = None
+        # self.next: LeafNode = None
+        self.maxLength = 5
+        self.next: LeafNode = next
+        if prevNode is not None:
+            prevNode.next = self
+        self.prev: LeafNode = prevNode
+        if nextNode is not None:
+            nextNode.prev = self
 
-        self.prev: LeafNode = None
-        self.next: LeafNode = None
+    def __getitem__(self, item):
+        # method is called a magic method
+        # and this method returns the value corresponding to the given key
+        return self.childs[self.keys.index(item)]
 
-    def insert(self, key, child):
+    def __setitem__(self, key, value):
+        i = self.index(key)
+        if key not in self.keys:
+            self.keys[i:i] = [key]
+            self.childs[i:i] = [value]
+        else:
+            self.childs[i-1] = value
+
+    def insert(self, key, value):
         if self.keys == []:
             self.keys.append(key)
-            self.childs.append([child])
+            self.childs.append([value])
+            print("inserted:", key)
             return self
 
         for i, element in enumerate(self.keys):
@@ -85,80 +127,111 @@ class LeafNode(Node):
 
     def split(self):
 
-        ### use self as leftNode is more ez to handle
-        topNode = Node(self.maxLength)
-        leftNode = self
-        rightNode = LeafNode(self.maxLength)
+        # topNode = Node(self.maxLength)
+        # leftNode = self
+        # rightNode = LeafNode(self.maxLength)
 
-        mid = self.maxLength // 2
+        # mid = self.maxLength // 2
 
-        rightNode.parent = leftNode.parent = topNode
+        # rightNode.parent = leftNode.parent = topNode
 
-        rightNode.keys = self.keys[mid:]
-        rightNode.childs = self.childs[mid:]
-        rightNode.prev = leftNode
-        if rightNode.next != None:
-            rightNode.next = rightNode.next
-        topNode.keys = [rightNode.keys[0]]
-        topNode.childs = [leftNode, rightNode]
+        # rightNode.keys = self.keys[mid:]
+        # rightNode.childs = self.childs[mid:]
+        # rightNode.prev = leftNode
+        # if rightNode.next != None:
+        #     rightNode.next = rightNode.next
+        # topNode.keys = [rightNode.keys[0]]
+        # topNode.childs = [leftNode, rightNode]
 
-        leftNode.keys = self.keys[:mid]
-        leftNode.childs = self.childs[:mid]
-        leftNode.next = rightNode
+        # leftNode.keys = self.keys[:mid]
+        # leftNode.childs = self.childs[:mid]
+        # leftNode.next = rightNode
 
-        return topNode
+        left = LeafNode(self.parent, self.prev, self)
+        right = self
+        mid = len(self.keys) //2
+
+        left.keys = self.keys[:mid]
+        left.childs = self.childs[:mid]
+
+        right.keys = self.keys[mid:]
+        right.keys = self.childs[mid:]
+
+        return right.keys[0], [left, right]
 
 ################################################################################################
 class BTree(object):
-    def __init__(self, maxLength):
+    def __init__(self, maxLength=5):
         self.root = LeafNode(maxLength)
 
-    @staticmethod
-    def find(node: Node, key):
-        for i, item in enumerate(node.keys):
-            if key < item:
-                return node.childs[i], i
-            elif i + 1 == len(node.keys):
-                return node.childs[i + 1], i + 1  # return right-most node/pointer.
+        self.max = self.maxLength = maxLength
 
-    def merge(self, parent, child, index):
-        parent.childs.pop(index)
-        pivot = child.keys[0]
+    # def find(self, key):
+    #     for i, item in enumerate(node.keys):
+    #         if key < item:
+    #             return self.childs[i], i
+    #         elif i + 1 == len(self.keys):
+    #             return self.childs[i+1], i + 1
 
-        for c in child.childs:
-            if isinstance(c, Node):
-                c.parent = parent
+    # def find(self, key):
+    #     node = self.root
+    #     for i, item in enumerate(node.keys):
+    #         if key < item:
+    #             return node.childs[i]
+    #         elif i + 1 == len(node.keys):
+    #             return node.childs[-1]          # return the right last node
 
-        for i, item in enumerate(parent.keys):
-            if pivot < item:
-                parent.keys = parent.keys[:i] + [pivot] + parent.keys[i:]
-                parent.childs = parent.childs[:i] + child.childs + parent.childs[i:]
-                break
+    def __getitem__(self, item):
+        return self.find(item)[item]
 
-            elif i + 1 == len(parent.keys):
-                parent.keys += [pivot]
-                parent.childs += child.childs
-                break
+    def find(self, key):
+        # find by using python __getitem__ method
+        node = self.root
+        while not isinstance(node, LeafNode):
+            node = node[key]
+        return node
+
+    # def merge(self, parent, child, index):
+    #     parent.childs.pop(index)
+    #     pivot = child.keys[0]
+
+    #     for c in child.childs:
+    #         if isinstance(c, Node):
+    #             c.parent = parent
+
+    #     for i, item in enumerate(parent.keys):
+    #         if pivot < item:
+    #             parent.keys = parent.keys[:i] + [pivot] + parent.keys[i:]
+    #             parent.childs = parent.childs[:i] + child.childs + parent.childs[i:]
+    #             break
+
+    #         elif i + 1 == len(parent.keys):
+    #             parent.keys += [pivot]
+    #             parent.childs += child.childs
+    #             break
 
     def insert(self, key, value):
         node = self.root
 
-        while not isinstance(node, LeafNode):  
-            node, index = self.find(node, key)
+        # while not isinstance(node, LeafNode):  
+        #     node, index = self.find(node, key)
+        leaf = self.find(key)
+        leaf[key] = value
 
+        if len(leaf.keys) > self.maxLength:
+            leaf.split()
+        # node.insert(key, value)
 
-        node.insert(key, value)
-
-        while len(node.keys) == node.maxLength:
-            if not node.isRoot():
-                parent = node.parent
-                node = node.split()
-                temp, index = self.find(parent, node.keys[0])
-                self.merge(parent, node, index)
-                node = parent
-            else:
-                node = node.split()
-                self.root = node
+        # while len(node.keys) == node.maxLength:
+        #     if not node.isRoot():
+        #         parent = node.parent
+        #         node = node.split()
+        #         temp, index = self.find(parent, node.keys[0])
+        #         self.merge(parent, node, index)
+        #         node = parent
+        #     else:
+        #         node = node.split()
+        #         self.root = node
 
 
     def printChilds(self):
@@ -175,8 +248,6 @@ class BTree(object):
                 printer += str(child.keys)
             print(printer)
             
-        
-
         # current = Node
         # while current.childs != [] and hasattr(current, "childs"):
         #     print(current.keys)
@@ -192,12 +263,12 @@ class BTree(object):
         #         current = current.childs[0]
 
 class main():
-    f = open("./file.txt", "r")
+    f = open("./test.txt", "r")
     tree = BTree(5)
     for x in f:
         tree.insert(int(x.rstrip()), 0)
 
-    tree.printChilds()
+    # tree.printChilds()
     # print(tree.root.childs[0].next.keys)
     # tree.printChilds()
     #tree.root.printAllChilds()
