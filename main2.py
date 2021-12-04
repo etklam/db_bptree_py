@@ -125,8 +125,8 @@ class BPTree:
         left = node
         right.parent = node.parent
 
-        right.values = node.values[mid+1:]
-        right.keys = node.keys[mid+1:]
+        right.values = node.values[mid:]
+        right.keys = node.keys[mid:]
 
         left.values = node.values[:mid]
         left.keys = node.keys[:mid+1]
@@ -182,6 +182,9 @@ class BPTree:
                     #     parent = leaf.parent
                     #     parent.values[parent.values.index(value)] = leaf.values[0]
                     self.updateParentAfterDel(leaf, value)
+                    mid = leaf.maxLength // 2
+                    # if len(leaf.values < mid):
+
                         
         if delSuccess == False:
             print("Value not found.")
@@ -193,7 +196,10 @@ class BPTree:
         
         while value in updatedNode.parent.values:
             parent = updatedNode.parent
-            parent.values[parent.values.index(value)] = updatedNode.values[0]
+            if updatedNode.values == []:
+                parent.values.pop(parent.values.index(value)) # exception if there are no value in leafNode
+            else:
+                parent.values[parent.values.index(value)] = updatedNode.values[0]
             self.updateParentAfterDel(parent, value)
 
     def printTree(self):
@@ -231,18 +237,17 @@ class main():
     tree = BPTree(5)
     for x in f:
         tree.insert(int(x.rstrip()), int(x.rstrip()))
+        tree.printTree()
+        tree.printData()
 
     #current = tree.root.keys[0].printALayer()
-    tree.delete(1)
+
     tree.printTree()
     tree.printData()
-    tree.delete(2)
-    tree.delete(9)
-    tree.delete(6)
+    tree.delete(8)
     tree.printTree()
     tree.printData()
-    tree.printTree()
-    tree.printData()
+
     # print(current.values)
     # while current.next!=None:
     #     current = current.next
