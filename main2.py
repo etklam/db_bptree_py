@@ -85,8 +85,8 @@ class BPTree:
 
         ## if > maxOrder:
         if (len(node.values) == node.maxLength):
-            left, keys, right = node.split()
-            self.updateParent(left, keys, right)
+            left, key, right = node.split()
+            self.updateParent(left, key, right)
             # self.split(left, keys, right)
 
     def updateParent(self, left, key, right):
@@ -96,15 +96,28 @@ class BPTree:
             newRoot.values = key
             newRoot.keys = [left, right]
             self.root = newRoot
-            left.parent = right.parent = newRoot
+            left.parent = newRoot
+            right.parent = newRoot
             return
+        else:
+            upNode = left.parent
+            pointers = upNode.keys
+            for i in range(len(pointers)):
+                if (pointers[i] == left):
+                    # find the left(original pointer on upNode), then assign to the next slot
+                    upNode.values = upNode.values[:i]+key+upNode.values[i:]
+                    upNode.keys = upNode.keys[:i+1]+[right]+upNode.keys[i+1:]  # the new pointer(right pointer) should be one behind the original(pointer)
+
         # Not root:
-        parent = left.parent
-        temp = parent.keys
-        for i in range(len(temp)):
-            if(temp[i] == left.keys):
-                parent.values = parent.values[:i] + [key] + parent.values[i:]
-                parent.keys = parent.keys[:i+1]+[key] + parent.values[i+1:]
+        # parent = left.parent
+        # temp = parent.keys
+        # for i in range(len(temp)):
+        #     if(temp[i] == left.keys):
+        #         parent.values = parent.values[:i] + [key] + parent.values[i:]
+        #         parent.keys = parent.keys[:i+1]+[key] + parent.values[i+1:]
+
+
+
         # print("splited parent", parent.keys)
 
     def search(self, value):
@@ -133,7 +146,7 @@ class BPTree:
         for i in range(layer):
             current = current.keys[0]
             current.printALayer()
-       
+
     def countLayer(self):
         current = self.root
         counter = 0
