@@ -212,14 +212,27 @@ class BPTree:
         prev = node.prev
         if prev != None:
             if len(prev.values) > mid:
+                
                 borrowV = prev.values.pop(-1)
+                print("borrow: ", borrowV)
                 borrowK = prev.keys.pop(-1)
                 node.values.insert(0,borrowV)
                 node.keys.insert(0,borrowK)
                 self.updateParentAfterDel(node, borrowV)
             else:
-                print("cannot borrow!")
+                print("cannot borrow!, need merge")
 
+    def merge(self):
+        index = self.parent.index(self.values[0])
+        # merge with the prev node
+        prev = self.prev
+        next = self.next
+        parent = self.parent
+        prev.values.append(self.values[0])
+        for child in self.keys:
+            child.parent = prev
+        parent.values.pop(index)
+        parent.keys.pop(self)
 
     def updateParentAfterBorrow(self, node, value):
         if node.parent !=None:
@@ -288,7 +301,7 @@ class main():
     tree.printTree()
     tree.printData()
 
-    print(current.values)
+    #print(current.values)
     while current.next!=None:
         current = current.next
         print(current.values)
