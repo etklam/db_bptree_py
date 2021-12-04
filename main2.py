@@ -137,20 +137,6 @@ class BPTree:
     def updateChildsPointer(self, parent):
         for child in parent.keys:
             child.parent = parent
-            
-
-
-        # Not root:
-        # parent = left.parent
-        # temp = parent.keys
-        # for i in range(len(temp)):
-        #     if(temp[i] == left.keys):
-        #         parent.values = parent.values[:i] + [key] + parent.values[i:]
-        #         parent.keys = parent.keys[:i+1]+[key] + parent.values[i+1:]
-
-
-
-        # print("splited parent", parent.keys)
 
     def search(self, value):
         current = self.root
@@ -170,6 +156,29 @@ class BPTree:
                     current = current.keys[i + 1]
                     break
         return current
+
+    def delete(self, value):
+        # get the leaf node that might contain the value
+        key = value # In this project, we assume all key = value
+        leaf = self.search(value)
+        delSuccess = False
+        for i, item in enumerate(leaf.values):
+            if item == value:
+                # remove the pointer of the data entry
+                # The index() function is used to find the position of the first matching item of a value from a list.
+                # leaf.keys[i] is the data entry page, it removes the data of the matching item.
+                # check if more than one records sharing a pointer
+                if len(leaf.keys[i])>1:
+                    # only delete the first matching item if there are multiple records
+                    leaf.keys[i].pop(leaf.keys[i].index(key))
+                else:
+                    leaf.keys[i].pop(leaf.keys[i].index(key))
+                    del leaf.keys[i]  #only one data record is using the pointer, it can be/should be deleted.
+                    leaf.values.pop(leaf.values.index(value)) # delete the index from the tree
+
+        if delSuccess == False:
+            print("Value not found.")
+
 
     def printTree(self):
         current = self.root
@@ -193,8 +202,6 @@ class BPTree:
             token += str(current.keys)
         print(token)
             
-
-
     def countLayer(self):
         current = self.root
         counter = 0
@@ -202,15 +209,6 @@ class BPTree:
             current = current.keys[0]
             counter += 1
         return counter
-    
-    # def allLeftNode(self):
-    #     current = self.root
-    #     counter = 0
-    #     while not current.isLeaf:
-    #         current = current.keys[0]
-    #         counter +=1
-
-    #     return counter
 
 class main():
     f = open("./test.txt", "r")
@@ -219,7 +217,8 @@ class main():
         tree.insert(int(x.rstrip()), int(x.rstrip()))
 
     #current = tree.root.keys[0].printALayer()
-
+    tree.delete(10)
+    tree.delete(10)
     tree.printTree()
     tree.printData()
     # print(current.values)
