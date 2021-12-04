@@ -140,6 +140,9 @@ class BPTree:
         left.next = right
         right.prev = left
         newKey = right.values[0]
+        if type(newKey) == list:
+            if len(newkey) > 1:
+                newKey = list(set(newKey))
         return left, newKey, right
 
     def updateChildsPointer(self, parent):
@@ -217,6 +220,7 @@ class BPTree:
             else:
                 print("cannot borrow!")
 
+
     def updateParentAfterBorrow(self, node, value):
         if node.parent !=None:
             parent = node.parent
@@ -284,13 +288,13 @@ class main():
     tree.printTree()
     tree.printData()
 
-    # print(current.values)
-    # while current.next!=None:
-    #     current = current.next
-    #     print(current.values)
-    # print("testing:", tree.root.keys[0].next.next.values)
-    # print("testing:", tree.root.keys[1].next.next.next.values)
-    # tree.printTree()
+    print(current.values)
+    while current.next!=None:
+        current = current.next
+        print(current.values)
+    print("testing:", tree.root.keys[0].next.next.values)
+    print("testing:", tree.root.keys[1].next.next.next.values)
+    tree.printTree()
 
 
 def btree(fanme):
@@ -299,7 +303,7 @@ def btree(fanme):
     with open(fanme, "r", encoding='utf-8') as f:
         print("Building an initial B+-Tree...")
         for line in f:
-            tree.insert(int(line))
+            tree.insert(int(line), int(line))
 
         print("Launching B+-Tree test program...")
         while start:
