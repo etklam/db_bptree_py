@@ -1,6 +1,7 @@
-from typing import ValuesView
+from typing import ValuesView, cast
 import os
 import sys
+import random
 ###############################
 ###
 ###
@@ -134,6 +135,7 @@ class BPTree:
 
         left.values = node.values[:mid]
         left.keys = node.keys[:mid+1]
+        left.next = right
         newKey = right.values[0]
         return left, newKey, right
 
@@ -167,6 +169,7 @@ class BPTree:
         delSuccess = False
         for i, item in enumerate(leaf.values):
             if item == value:
+                delSuccess = True
                 # remove the pointer of the data entry
                 # The index() function is used to find the position of the first matching item of a value from a list.
                 # leaf.keys[i] is the data entry page, it removes the data of the matching item.
@@ -176,13 +179,26 @@ class BPTree:
                     leaf.keys[i].pop(leaf.keys[i].index(key))
                 else:
                     leaf.keys[i].pop(leaf.keys[i].index(key))
-                    # only one data record is using the pointer, it can be/should be deleted.
-                    del leaf.keys[i]
-                    # delete the index from the tree
-                    leaf.values.pop(leaf.values.index(value))
-
+                    del leaf.keys[i]  #only one data record is using the pointer, it can be/should be deleted.
+                    leaf.values.pop(leaf.values.index(value)) # delete the index from the tree
+                    # check if the deleted value is in the parent Node
+                    # if value in leaf.parent.values:
+                    #     parent = leaf.parent
+                    #     parent.values[parent.values.index(value)] = leaf.values[0]
+                    self.updateParentAfterDel(leaf, value)
+                        
         if delSuccess == False:
             print("Value not found.")
+
+    def updateParentAfterDel(self, updatedNode, value):
+        # while updatedNode.parent != None:
+        if updatedNode.parent == None:
+            return
+        
+        while value in updatedNode.parent.values:
+            parent = updatedNode.parent
+            parent.values[parent.values.index(value)] = updatedNode.values[0]
+            self.updateParentAfterDel(parent, value)
 
     def printTree(self):
         current = self.root
@@ -222,8 +238,14 @@ class main():
         tree.insert(int(x.rstrip()), int(x.rstrip()))
 
     #current = tree.root.keys[0].printALayer()
-    tree.delete(10)
-    tree.delete(10)
+    tree.delete(1)
+    tree.printTree()
+    tree.printData()
+    tree.delete(2)
+    tree.delete(9)
+    tree.delete(6)
+    tree.printTree()
+    tree.printData()
     tree.printTree()
     tree.printData()
     # print(current.values)
@@ -239,9 +261,43 @@ def btree(fanme):
     tree = BPTree(5)
     start = True
     with open(fanme, "w+", encoding='utf-8') as f:
+        print("Building an initial B+-Tree...")
         for line in f:
-            f.readline
-        
+            if str in line:
+                val = str
+                tree.insert(value=val)
+
+        print("Launching B+-Tree test program...")
+        while start:
+            print("Waiting for your commands:")
+            i = input()
+            cmd = i.split(" ")
+            if cmd[1].lower() == "insert":
+                low = cmd[2]
+                high = cmd[3]
+                for i in range(cmd[4]):
+                    key = random.randint(low,high)
+                    tree.insert(key=key)
+                print("{cmd[4]} data entries with keys randomly chosen between [{low}, {high}] are inserted!")
+            elif cmd[1].lower() == "delete":
+                low = cmd[2]
+                high = cmd[3]
+                key = random.randint(low,high)
+                tree.delete(key)
+                print("The data entries for values in [{low}, {high}] are deleted.")
+            elif cmd[1].lower() == "print":
+                tree.printTree()
+            elif cmd[1].lower() == "stats":
+                # tree.dumpStatistic()
+                print("dump stat")
+            elif cmd[1].lower() == "quit":
+                start = False
+                print("Thanks!Byebye")
+
+
+
+
+
 
 if __name__ == "__main__":
     arg = str(sys.argv[1])
