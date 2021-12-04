@@ -287,7 +287,7 @@ class BPTree:
 
     def rangeSearch(self, a, b):
         minV = min(a,b)
-        maxV = max(a,b)
+        maxV = max(a,b)+1
         keyArr = []
         current = self.search(minV)
         
