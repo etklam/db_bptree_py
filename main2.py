@@ -17,6 +17,7 @@ class Node:
         self.values = []
         self.keys = []
         self.next: Node = None
+        self.prev: Node = None
         self.parent: Node = None
         self.isLeaf = False
 
@@ -60,6 +61,7 @@ class Node:
         left.values = node.values[:mid]
         left.keys = node.keys[:mid]
         left.next = right
+        right.prev = left
         print("left:", left.keys)
         print("right:", right.keys)
         print("key", right.values[0])
@@ -131,6 +133,7 @@ class BPTree:
         left.values = node.values[:mid]
         left.keys = node.keys[:mid+1]
         left.next = right
+        right.prev = left
         newKey = right.values[0]
         return left, newKey, right
 
@@ -185,9 +188,13 @@ class BPTree:
                     mid = leaf.maxLength // 2
                     # if len(leaf.values < mid):
 
+
                         
         if delSuccess == False:
             print("Value not found.")
+
+    # def borrowFromLeft(self, node):
+    #     node.parent
 
     def updateParentAfterDel(self, updatedNode, value):
         # while updatedNode.parent != None:
