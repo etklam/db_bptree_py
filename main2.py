@@ -181,6 +181,20 @@ class BPTree:
             current = current.keys[0]
             current.printALayer()
 
+    def printData(self):
+        current = self.root
+        # print("root:", self.root.values)
+        while not current.isLeaf:
+            current = current.keys[0]
+        token = "data: "
+        token += str(current.keys)
+        while current.next != None:
+            current = current.next
+            token += str(current.keys)
+        print(token)
+            
+
+
     def countLayer(self):
         current = self.root
         counter = 0
@@ -198,18 +212,16 @@ class BPTree:
 
     #     return counter
 
-
-            
-
 class main():
     f = open("./test.txt", "r")
     tree = BPTree(5)
     for x in f:
         tree.insert(int(x.rstrip()), int(x.rstrip()))
 
-    current = tree.root.keys[0].printALayer()
+    #current = tree.root.keys[0].printALayer()
 
     tree.printTree()
+    tree.printData()
     # print(current.values)
     # while current.next!=None:
     #     current = current.next
