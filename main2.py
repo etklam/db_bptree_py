@@ -111,18 +111,7 @@ class BPTree:
 
                 if (len(upNode.keys) > upNode.maxLength):
                     # split a Right New Node, copy the right half values and keys into Right
-                    mid = upNode.maxLength // 2
-                    upRight = Node()
-                    upLeft = upNode
-                    upRight.parent = upNode.parent
-                    
-                    upRight.values = upNode.values[mid+1:]
-                    upRight.keys = upNode.keys[mid+1:]
-
-                    newKey = upRight.values[0]
-
-                    upLeft.values = upNode.values[:mid]
-                    upLeft.keys = upNode.keys[:mid+1]
+                    upLeft, newKey, upRight = self.split(upNode)
                     
                     # updating childs's parent pointer
                     self.updateChildsPointer(upLeft)
@@ -130,10 +119,25 @@ class BPTree:
 
                     self.updateParent(upLeft, [newKey], upRight) # recursive update the parent node
 
+    def split(self, node):
+        mid = node.maxLength //2
+        right = Node()
+        left = node
+        right.parent = node.parent
+
+        right.values = node.values[mid+1:]
+        right.keys = node.keys[mid+1:]
+
+        left.values = node.values[:mid]
+        left.keys = node.keys[:mid+1]
+        newKey = right.values[0]
+        return left, newKey, right
+
     
     def updateChildsPointer(self, parent):
         for child in parent.keys:
             child.parent = parent
+            
 
 
         # Not root:
