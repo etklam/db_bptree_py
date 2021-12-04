@@ -179,14 +179,16 @@ class BPTree:
                     leaf.keys[i].pop(leaf.keys[i].index(key))
                 else:
                     leaf.keys[i].pop(leaf.keys[i].index(key))
-                    del leaf.keys[i]  #only one data record is using the pointer, it can be/should be deleted.
-                    leaf.values.pop(leaf.values.index(value)) # delete the index from the tree
+                    # only one data record is using the pointer, it can be/should be deleted.
+                    del leaf.keys[i]
+                    # delete the index from the tree
+                    leaf.values.pop(leaf.values.index(value))
                     # check if the deleted value is in the parent Node
                     # if value in leaf.parent.values:
                     #     parent = leaf.parent
                     #     parent.values[parent.values.index(value)] = leaf.values[0]
                     self.updateParentAfterDel(leaf, value)
-                        
+
         if delSuccess == False:
             print("Value not found.")
 
@@ -194,7 +196,7 @@ class BPTree:
         # while updatedNode.parent != None:
         if updatedNode.parent == None:
             return
-        
+
         while value in updatedNode.parent.values:
             parent = updatedNode.parent
             parent.values[parent.values.index(value)] = updatedNode.values[0]
@@ -231,24 +233,24 @@ class BPTree:
         return counter
 
 
-class main():
-    f = open("./test.txt", "r")
-    tree = BPTree(5)
-    for x in f:
-        tree.insert(int(x.rstrip()), int(x.rstrip()))
+# class main():
+    # f = open("./test.txt", "r")
+    # tree = BPTree(5)
+    # for x in f:
+    #     tree.insert(int(x.rstrip()), int(x.rstrip()))
 
-    #current = tree.root.keys[0].printALayer()
-    tree.delete(1)
-    tree.printTree()
-    tree.printData()
-    tree.delete(2)
-    tree.delete(9)
-    tree.delete(6)
-    tree.printTree()
-    tree.printData()
-    tree.printTree()
-    tree.printData()
-    # print(current.values)
+    # #current = tree.root.keys[0].printALayer()
+    # tree.delete(1)
+    # tree.printTree()
+    # tree.printData()
+    # tree.delete(2)
+    # tree.delete(9)
+    # tree.delete(6)
+    # tree.printTree()
+    # tree.printData()
+    # tree.printTree()
+    # tree.printData()
+    # # print(current.values)
     # while current.next!=None:
     #     current = current.next
     #     print(current.values)
@@ -260,43 +262,64 @@ class main():
 def btree(fanme):
     tree = BPTree(5)
     start = True
-    with open(fanme, "w+", encoding='utf-8') as f:
+    with open(fanme, "r", encoding='utf-8') as f:
         print("Building an initial B+-Tree...")
         for line in f:
-            if str in line:
-                val = str
-                tree.insert(value=val)
+            tree.insert(int(line))
 
         print("Launching B+-Tree test program...")
         while start:
             print("Waiting for your commands:")
             i = input()
             cmd = i.split(" ")
-            if cmd[1].lower() == "insert":
-                low = cmd[2]
-                high = cmd[3]
-                for i in range(cmd[4]):
-                    key = random.randint(low,high)
-                    tree.insert(key=key)
-                print("{cmd[4]} data entries with keys randomly chosen between [{low}, {high}] are inserted!")
-            elif cmd[1].lower() == "delete":
-                low = cmd[2]
-                high = cmd[3]
-                key = random.randint(low,high)
-                tree.delete(key)
-                print("The data entries for values in [{low}, {high}] are deleted.")
-            elif cmd[1].lower() == "print":
-                tree.printTree()
-            elif cmd[1].lower() == "stats":
+            if cmd[0].lower() == "insert":
+                if len(cmd) < 4 or len(cmd) > 4:
+                    print(f"command insert format: insert <low> <high> <num>")
+                elif int(cmd[1]) > int(cmd[2]):
+                    print(f"command insert format: insert <low> <high> <num>")
+                else:
+                    low = int(cmd[1])
+                    high = int(cmd[2])
+                    for i in range(int(cmd[3])):
+                        key = random.randint(low, high)
+                        tree.insert(key=key)
+                    print(
+                        f"{cmd[3]} data entries with keys randomly chosen between [{low}, {high}] are inserted!")
+            elif cmd[0].lower() == "delete":
+                if len(cmd) < 3 or len(cmd) > 3:
+                    print(f"command delete format: delete <low> <high>")
+                elif int(cmd[1]) > int(cmd[2]):
+                    print(f"command delete format: delete <low> <high>")
+                else:
+                    low = int(cmd[1])
+                    high = int(cmd[2])
+                    key = random.randint(low, high)
+                    tree.delete(key)
+                    print(
+                        f"The data entries for values in [{low}, {high}] are deleted.")
+            elif cmd[0].lower() == "search":
+                if len(cmd) < 3 or len(cmd) > 3:
+                    print("command search format: search <low> <high>")
+                elif int(cmd[1]) > int(cmd[2]):
+                    print("command search format: search <low> <high>")
+                else:
+                    low = int(cmd[1])
+                    high = int(cmd[2])
+                    result = tree.search(low)
+                    print("key in range: ", result.keys)
+                    # for i in range(low, high):
+                    #     result = tree.search(i)
+                    #     print("key in range: ", result.keys)
+            elif cmd[0].lower() == "print":
+                tree.printData()
+            elif cmd[0].lower() == "stats":
                 # tree.dumpStatistic()
                 print("dump stat")
-            elif cmd[1].lower() == "quit":
+            elif cmd[0].lower() == "quit":
                 start = False
                 print("Thanks!Byebye")
-
-
-
-
+            else:
+                print("unknown command")
 
 
 if __name__ == "__main__":
