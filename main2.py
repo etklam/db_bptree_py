@@ -1,5 +1,7 @@
-from typing import ValuesView
-
+from typing import ValuesView, cast
+import os
+import sys
+import random
 ###############################
 ###
 ###
@@ -21,11 +23,11 @@ class Node:
         self.parent: Node = None
         self.isLeaf = False
 
-    
     # Insert at the leaf
+
     def insert(self, leaf, value, key):
         print("insert:", key)
-        
+
         if (self.values):
             temp = self.values
             for i in range(len(temp)):
@@ -65,28 +67,29 @@ class Node:
         print("left:", left.keys)
         print("right:", right.keys)
         print("key", right.values[0])
-        return left,right.keys[0], right
-    
+        return left, right.keys[0], right
+
     def printALayer(self):
         current = self
         token = ":::"
         token += str(current.values)
-        while current.next!=None:
+        while current.next != None:
             current = current.next
             token += str(current.values)
         token += ":::"
         print(token)
 
+
 class BPTree:
     def __init__(self, maxLength=5):
         self.root = Node(maxLength)
         self.root.isLeaf = True
-        
-    def insert(self, key, value = 0):
+
+    def insert(self, key, value=0):
         node = self.search(key)
         node.insert(node, value, key)
 
-        ## if > maxOrder:
+        # if > maxOrder:
         if (len(node.values) == node.maxLength):
             left, key, right = node.split()
             self.updateParent(left, key, right)
@@ -94,7 +97,7 @@ class BPTree:
 
     def updateParent(self, left, key, right):
         if(self.root == left):
-            #this is a init split
+            # this is a init split
             newRoot = Node()
             newRoot.values = key
             newRoot.keys = [left, right]
@@ -109,20 +112,22 @@ class BPTree:
                 if (pointers[i] == left):
                     # find the left(original pointer on upNode), then assign to the next slot
                     upNode.values = upNode.values[:i]+key+upNode.values[i:]
-                    upNode.keys = upNode.keys[:i+1]+[right]+upNode.keys[i+1:]  # the new pointer(right pointer) should be one behind the original(pointer)
+                    # the new pointer(right pointer) should be one behind the original(pointer)
+                    upNode.keys = upNode.keys[:i+1]+[right]+upNode.keys[i+1:]
 
                 if (len(upNode.keys) > upNode.maxLength):
                     # split a Right New Node, copy the right half values and keys into Right
                     upLeft, newKey, upRight = self.split(upNode)
-                    
+
                     # updating childs's parent pointer
                     self.updateChildsPointer(upLeft)
                     self.updateChildsPointer(upRight)
 
-                    self.updateParent(upLeft, [newKey], upRight) # recursive update the parent node
+                    # recursive update the parent node
+                    self.updateParent(upLeft, [newKey], upRight)
 
     def split(self, node):
-        mid = node.maxLength //2
+        mid = node.maxLength // 2
         right = Node()
         left = node
         right.parent = node.parent
@@ -137,7 +142,6 @@ class BPTree:
         newKey = right.values[0]
         return left, newKey, right
 
-    
     def updateChildsPointer(self, parent):
         for child in parent.keys:
             child.parent = parent
@@ -163,7 +167,7 @@ class BPTree:
 
     def delete(self, value):
         # get the leaf node that might contain the value
-        key = value # In this project, we assume all key = value
+        key = value  # In this project, we assume all key = value
         leaf = self.search(value)
         delSuccess = False
         for i, item in enumerate(leaf.values):
@@ -173,13 +177,15 @@ class BPTree:
                 # The index() function is used to find the position of the first matching item of a value from a list.
                 # leaf.keys[i] is the data entry page, it removes the data of the matching item.
                 # check if more than one records sharing a pointer
-                if len(leaf.keys[i])>1:
+                if len(leaf.keys[i]) > 1:
                     # only delete the first matching item if there are multiple records
                     leaf.keys[i].pop(leaf.keys[i].index(key))
                 else:
                     leaf.keys[i].pop(leaf.keys[i].index(key))
-                    del leaf.keys[i]  #only one data record is using the pointer, it can be/should be deleted.
-                    leaf.values.pop(leaf.values.index(value)) # delete the index from the tree
+                    # only one data record is using the pointer, it can be/should be deleted.
+                    del leaf.keys[i]
+                    # delete the index from the tree
+                    leaf.values.pop(leaf.values.index(value))
                     # check if the deleted value is in the parent Node
                     # if value in leaf.parent.values:
                     #     parent = leaf.parent
@@ -223,7 +229,7 @@ class BPTree:
         # while updatedNode.parent != None:
         if updatedNode.parent == None:
             return
-        
+
         while value in updatedNode.parent.values:
             parent = updatedNode.parent
             if updatedNode.values == []:
@@ -253,7 +259,7 @@ class BPTree:
             current = current.next
             token += str(current.keys)
         print(token)
-            
+
     def countLayer(self):
         current = self.root
         counter = 0
@@ -285,3 +291,78 @@ class main():
     # print("testing:", tree.root.keys[0].next.next.values)
     # print("testing:", tree.root.keys[1].next.next.next.values)
     # tree.printTree()
+
+
+def btree(fanme):
+    tree = BPTree(5)
+    start = True
+    with open(fanme, "r", encoding='utf-8') as f:
+        print("Building an initial B+-Tree...")
+        for line in f:
+            tree.insert(int(line))
+
+        print("Launching B+-Tree test program...")
+        while start:
+            print("Waiting for your commands:")
+            i = input()
+            cmd = i.split(" ")
+            if cmd[0].lower() == "insert":
+                if len(cmd) < 4 or len(cmd) > 4:
+                    print(f"command insert format: insert <low> <high> <num>")
+                elif int(cmd[1]) > int(cmd[2]):
+                    print(f"command insert format: insert <low> <high> <num>")
+                else:
+                    low = int(cmd[1])
+                    high = int(cmd[2])
+                    for i in range(int(cmd[3])):
+                        key = random.randint(low, high)
+                        tree.insert(key=key)
+                    print(
+                        f"{cmd[3]} data entries with keys randomly chosen between [{low}, {high}] are inserted!")
+            elif cmd[0].lower() == "delete":
+                if len(cmd) < 3 or len(cmd) > 3:
+                    print(f"command delete format: delete <low> <high>")
+                elif int(cmd[1]) > int(cmd[2]):
+                    print(f"command delete format: delete <low> <high>")
+                else:
+                    low = int(cmd[1])
+                    high = int(cmd[2])
+                    key = random.randint(low, high)
+                    tree.delete(key)
+                    print(
+                        f"The data entries for values in [{low}, {high}] are deleted.")
+            elif cmd[0].lower() == "search":
+                if len(cmd) < 3 or len(cmd) > 3:
+                    print("command search format: search <low> <high>")
+                elif int(cmd[1]) > int(cmd[2]):
+                    print("command search format: search <low> <high>")
+                else:
+                    low = int(cmd[1])
+                    high = int(cmd[2])
+                    result = tree.search(low)
+                    print("key in range: ", result.keys)
+                    # for i in range(low, high):
+                    #     result = tree.search(i)
+                    #     print("key in range: ", result.keys)
+            elif cmd[0].lower() == "print":
+                tree.printData()
+            elif cmd[0].lower() == "stats":
+                # tree.dumpStatistic()
+                print("dump stat")
+            elif cmd[0].lower() == "quit":
+                start = False
+                print("Thanks!Byebye")
+            else:
+                print("unknown command")
+
+
+if __name__ == "__main__":
+    arg = str(sys.argv[1])
+    if arg == None:
+        print("Please input argument [fname] or -help for help")
+
+    if arg == "-help":
+        print(
+            "Usage: btree [fname] \n      fname: the name of the data file storing the search key values")
+    elif arg.endswith(".txt"):
+        btree(fanme=arg)
