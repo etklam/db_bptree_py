@@ -47,6 +47,7 @@ class Node:
         left.values = node.values[:mid]
         left.keys = node.keys[:mid]
         left.next = right
+        return left,right.keys[0], right
 
 class BPTree:
     def __init__(self, maxLength=5):
@@ -59,8 +60,17 @@ class BPTree:
 
         ## if > maxOrder:
         if (len(node.values) == node.maxLength):
-            node.split()
+            left, keys, right = node.split()
 
+    def split(self, left, key, right):
+        if(self.root == left):
+            #this is a init split
+            newRoot = Node()
+            newRoot.values = [key]
+            newRoot.keys = [left, right]
+            self.root = newRoot
+            left.parent = right.parent = newRoot
+            return
 
 
 
