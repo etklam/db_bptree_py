@@ -164,6 +164,7 @@ class BPTree:
         delSuccess = False
         for i, item in enumerate(leaf.values):
             if item == value:
+                delSuccess = True
                 # remove the pointer of the data entry
                 # The index() function is used to find the position of the first matching item of a value from a list.
                 # leaf.keys[i] is the data entry page, it removes the data of the matching item.
@@ -176,15 +177,23 @@ class BPTree:
                     del leaf.keys[i]  #only one data record is using the pointer, it can be/should be deleted.
                     leaf.values.pop(leaf.values.index(value)) # delete the index from the tree
                     # check if the deleted value is in the parent Node
-                    if value in leaf.parent.values:
-                        parent = leaf.parent
-                        parent.values[parent.values.index(value)] = leaf.values[0]
+                    # if value in leaf.parent.values:
+                    #     parent = leaf.parent
+                    #     parent.values[parent.values.index(value)] = leaf.values[0]
+                    self.updateParentAfterDel(leaf, value)
                         
-
-
         if delSuccess == False:
             print("Value not found.")
 
+    def updateParentAfterDel(self, updatedNode, value):
+        # while updatedNode.parent != None:
+        if updatedNode.parent == None:
+            return
+        
+        while value in updatedNode.parent.values:
+            parent = updatedNode.parent
+            parent.values[parent.values.index(value)] = updatedNode.values[0]
+            self.updateParentAfterDel(parent, value)
 
     def printTree(self):
         current = self.root
@@ -226,7 +235,14 @@ class main():
     tree.delete(1)
     tree.printTree()
     tree.printData()
-    tree.delete(3)
+    tree.delete(2)
+    tree.delete(9)
+    tree.delete(6)
+    tree.printTree()
+    tree.printData()
+    tree.delete(10)
+    tree.delete(11)
+    tree.delete(12)
     tree.printTree()
     tree.printData()
     # print(current.values)
