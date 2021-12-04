@@ -158,7 +158,7 @@ class BPTree:
             for i in range(len(temp)):
                 # print("temp[i]:", value, str(temp[i]))
                 if (value == temp[i]):
-                    current = current.keys[i + 1]
+                    current = current.keys[i]
                     break
                 elif (value < temp[i]):
                     current = current.keys[i]
@@ -285,6 +285,19 @@ class BPTree:
             counter += 1
         return counter
 
+    def rangeSearch(self, a, b):
+        minV = min(a,b)
+        maxV = max(a,b)
+        keyArr = []
+        current = self.search(minV)
+        
+        while current.next != None:
+            for value in current.values:
+                if value>=minV and value <maxV:
+                    keyArr.append(value)
+            current = current.next
+        return keyArr
+
 class main():
     f = open("./test.txt", "r")
     tree = BPTree(5)
@@ -302,12 +315,13 @@ class main():
     tree.printData()
 
     #print(current.values)
-    while current.next!=None:
-        current = current.next
-        print(current.values)
-    print("testing:", tree.root.keys[0].next.next.values)
-    print("testing:", tree.root.keys[1].next.next.next.values)
+    # while current.next!=None:
+    #     current = current.next
+    #     print(current.values)
+    # print("testing:", tree.root.keys[0].next.next.values)
+    # print("testing:", tree.root.keys[1].next.next.next.values)
     tree.printTree()
+    print(tree.rangeSearch(7,20))
 
 
 def btree(fanme):
