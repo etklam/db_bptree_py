@@ -175,6 +175,12 @@ class BPTree:
                     leaf.keys[i].pop(leaf.keys[i].index(key))
                     del leaf.keys[i]  #only one data record is using the pointer, it can be/should be deleted.
                     leaf.values.pop(leaf.values.index(value)) # delete the index from the tree
+                    # check if the deleted value is in the parent Node
+                    if value in leaf.parent.values:
+                        parent = leaf.parent
+                        parent.values[parent.values.index(value)] = leaf.values[0]
+                        
+
 
         if delSuccess == False:
             print("Value not found.")
@@ -217,8 +223,10 @@ class main():
         tree.insert(int(x.rstrip()), int(x.rstrip()))
 
     #current = tree.root.keys[0].printALayer()
-    tree.delete(10)
-    tree.delete(10)
+    tree.delete(1)
+    tree.printTree()
+    tree.printData()
+    tree.delete(3)
     tree.printTree()
     tree.printData()
     # print(current.values)
