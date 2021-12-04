@@ -295,7 +295,10 @@ class BPTree:
             for value in current.values:
                 if value>=minV and value <maxV:
                     keyArr.append(value)
+                    if value > maxV:
+                        return keyArrS
             current = current.next
+            
         return keyArr
 
 class main():
