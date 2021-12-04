@@ -130,6 +130,7 @@ class BPTree:
 
         left.values = node.values[:mid]
         left.keys = node.keys[:mid+1]
+        left.next = right
         newKey = right.values[0]
         return left, newKey, right
 
@@ -240,9 +241,6 @@ class main():
     tree.delete(6)
     tree.printTree()
     tree.printData()
-    tree.delete(10)
-    tree.delete(11)
-    tree.delete(12)
     tree.printTree()
     tree.printData()
     # print(current.values)
