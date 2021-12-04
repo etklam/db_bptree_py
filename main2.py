@@ -47,6 +47,7 @@ class Node:
             self.keys = [[key]]
 
     def split(self):
+        # split on Leaf
         node = self
         mid = node.maxLength // 2
         left = node
@@ -108,6 +109,33 @@ class BPTree:
                     upNode.values = upNode.values[:i]+key+upNode.values[i:]
                     upNode.keys = upNode.keys[:i+1]+[right]+upNode.keys[i+1:]  # the new pointer(right pointer) should be one behind the original(pointer)
 
+                if (len(upNode.keys) > upNode.maxLength):
+                    # split a Right New Node, copy the right half values and keys into Right
+                    mid = upNode.maxLength // 2
+                    upRight = Node()
+                    upLeft = upNode
+                    upRight.parent = upNode.parent
+                    
+                    upRight.values = upNode.values[mid+1:]
+                    upRight.keys = upNode.keys[mid+1:]
+
+                    newKey = upRight.values[0]
+
+                    upLeft.values = upNode.values[:mid]
+                    upLeft.keys = upNode.keys[:mid+1]
+                    
+                    # updating childs's parent pointer
+                    self.updateChildsPointer(upLeft)
+                    self.updateChildsPointer(upRight)
+
+                    self.updateParent(upLeft, [newKey], upRight) # recursive update the parent node
+
+    
+    def updateChildsPointer(self, parent):
+        for child in parent.keys:
+            child.parent = parent
+
+
         # Not root:
         # parent = left.parent
         # temp = parent.keys
@@ -124,6 +152,8 @@ class BPTree:
         current = self.root
         while not current.isLeaf:
             temp = current.values
+            if type(temp) == int:
+                temp = [temp]
             for i in range(len(temp)):
                 # print("temp[i]:", value, str(temp[i]))
                 if (value == temp[i]):
