@@ -1,3 +1,6 @@
+from typing import ValuesView
+
+
 class Node:
     def __init__(self, maxLength=5):
         self.maxLength = maxLength
@@ -47,6 +50,9 @@ class Node:
         left.values = node.values[:mid]
         left.keys = node.keys[:mid]
         left.next = right
+        print("left:", left.keys, left.values)
+        print("right:", right.keys, right.keys)
+        print("key", right.values[0])
         return left,right.keys[0], right
 
 class BPTree:
@@ -61,17 +67,26 @@ class BPTree:
         ## if > maxOrder:
         if (len(node.values) == node.maxLength):
             left, keys, right = node.split()
+            self.updateParent(left, keys, right)
+            # self.split(left, keys, right)
 
-    def split(self, left, key, right):
+    def updateParent(self, left, key, right):
         if(self.root == left):
             #this is a init split
             newRoot = Node()
-            newRoot.values = [key]
+            newRoot.values = key
             newRoot.keys = [left, right]
             self.root = newRoot
             left.parent = right.parent = newRoot
             return
-
+        # Not root:
+        parent = left.parent
+        temp = parent.keys
+        for i in range(len(temp)):
+            if(temp[i] == left.keys):
+                parent.values = parent.values[:i] + [key] + parent.values[i:]
+                parent.keys = parent.keys[:i+1]+[key] + parent.values[i+1:]
+        print("splited parent", parent.keys)
 
 
 
@@ -80,6 +95,7 @@ class BPTree:
         while not current.isLeaf:
             temp = current.values
             for i in range(len(temp)):
+                print("temp[i]:", value, str(temp[i]))
                 if (value == temp[i]):
                     current = current.keys[i + 1]
                     break
@@ -89,6 +105,7 @@ class BPTree:
                 elif (i + 1 == len(current.values)):
                     current = current.keys[i + 1]
                     break
+
         return current
 
 
@@ -98,4 +115,4 @@ class main():
     f = open("./test.txt", "r")
     tree = BPTree(5)
     for x in f:
-        tree.insert(int(x.rstrip()), int(x.rstrip()))
+        tree.insert(int(x.rstrip()), str(x.rstrip()))
