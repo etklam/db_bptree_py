@@ -14,7 +14,7 @@ class Node:
     
     # Insert at the leaf
     def insert(self, leaf, value, key):
-        print("insert:", key, value)
+        print("insert:", key)
         
         if (self.values):
             temp1 = self.values
@@ -50,8 +50,8 @@ class Node:
         left.values = node.values[:mid]
         left.keys = node.keys[:mid]
         left.next = right
-        print("left:", left.keys, left.values)
-        print("right:", right.keys, right.keys)
+        print("left:", left.keys)
+        print("right:", right.keys)
         print("key", right.values[0])
         return left,right.keys[0], right
 
@@ -95,7 +95,7 @@ class BPTree:
         while not current.isLeaf:
             temp = current.values
             for i in range(len(temp)):
-                print("temp[i]:", value, str(temp[i]))
+                # print("temp[i]:", value, str(temp[i]))
                 if (value == temp[i]):
                     current = current.keys[i + 1]
                     break
@@ -115,4 +115,4 @@ class main():
     f = open("./test.txt", "r")
     tree = BPTree(5)
     for x in f:
-        tree.insert(int(x.rstrip()), str(x.rstrip()))
+        tree.insert(int(x.rstrip()), int(x.rstrip()))
