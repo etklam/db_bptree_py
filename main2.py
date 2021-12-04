@@ -8,15 +8,6 @@ class Node:
         self.parent: Node = None
         self.isLeaf = False
 
-    def __getitem__(self, item):
-        return self.values[self.index(item)]
-
-    def index(self, key):
-        for i, item in enumerate(self.keys):
-            if key < item:
-                return i
-
-        return len(self.keys)
     
     # Insert at the leaf
     def insert(self, leaf, value, key):
@@ -43,16 +34,32 @@ class Node:
             self.values = [value]
             self.keys = [[key]]
 
-
-
 class BPTree:
     def __init__(self, maxLength=5):
         self.root = Node(maxLength)
         self.root.isLeaf = True
         
     def insert(self, key, value = 0):
-        oldNode = self.search(key)
-        oldNode.insert(oldNode, value, key)
+        node = self.search(key)
+        node.insert(node, value, key)
+
+        ## if > maxOrder:
+        if (len(node.values) == node.maxLength):
+            mid = node.maxLength // 2
+            left = node
+            right = Node()
+            right.isLeaf = True
+            right.parent = node.parent
+            right.values = node.values[mid:]
+            right.keys = node.keys[mid:]
+            right.next = node.next
+            left.values = node.values[:mid]
+            left.keys = node.keys[:mid]
+            left.next = right
+
+
+
+
 
     def search(self, value):
         current = self.root
