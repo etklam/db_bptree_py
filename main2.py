@@ -1,5 +1,6 @@
 from typing import ValuesView
-
+import os
+import sys
 ###############################
 ###
 ###
@@ -20,11 +21,11 @@ class Node:
         self.parent: Node = None
         self.isLeaf = False
 
-    
     # Insert at the leaf
+
     def insert(self, leaf, value, key):
         print("insert:", key)
-        
+
         if (self.values):
             temp = self.values
             for i in range(len(temp)):
@@ -63,28 +64,29 @@ class Node:
         print("left:", left.keys)
         print("right:", right.keys)
         print("key", right.values[0])
-        return left,right.keys[0], right
-    
+        return left, right.keys[0], right
+
     def printALayer(self):
         current = self
         token = ":::"
         token += str(current.values)
-        while current.next!=None:
+        while current.next != None:
             current = current.next
             token += str(current.values)
         token += ":::"
         print(token)
 
+
 class BPTree:
     def __init__(self, maxLength=5):
         self.root = Node(maxLength)
         self.root.isLeaf = True
-        
-    def insert(self, key, value = 0):
+
+    def insert(self, key, value=0):
         node = self.search(key)
         node.insert(node, value, key)
 
-        ## if > maxOrder:
+        # if > maxOrder:
         if (len(node.values) == node.maxLength):
             left, key, right = node.split()
             self.updateParent(left, key, right)
@@ -92,7 +94,7 @@ class BPTree:
 
     def updateParent(self, left, key, right):
         if(self.root == left):
-            #this is a init split
+            # this is a init split
             newRoot = Node()
             newRoot.values = key
             newRoot.keys = [left, right]
@@ -107,20 +109,22 @@ class BPTree:
                 if (pointers[i] == left):
                     # find the left(original pointer on upNode), then assign to the next slot
                     upNode.values = upNode.values[:i]+key+upNode.values[i:]
-                    upNode.keys = upNode.keys[:i+1]+[right]+upNode.keys[i+1:]  # the new pointer(right pointer) should be one behind the original(pointer)
+                    # the new pointer(right pointer) should be one behind the original(pointer)
+                    upNode.keys = upNode.keys[:i+1]+[right]+upNode.keys[i+1:]
 
                 if (len(upNode.keys) > upNode.maxLength):
                     # split a Right New Node, copy the right half values and keys into Right
                     upLeft, newKey, upRight = self.split(upNode)
-                    
+
                     # updating childs's parent pointer
                     self.updateChildsPointer(upLeft)
                     self.updateChildsPointer(upRight)
 
-                    self.updateParent(upLeft, [newKey], upRight) # recursive update the parent node
+                    # recursive update the parent node
+                    self.updateParent(upLeft, [newKey], upRight)
 
     def split(self, node):
-        mid = node.maxLength //2
+        mid = node.maxLength // 2
         right = Node()
         left = node
         right.parent = node.parent
@@ -133,7 +137,6 @@ class BPTree:
         newKey = right.values[0]
         return left, newKey, right
 
-    
     def updateChildsPointer(self, parent):
         for child in parent.keys:
             child.parent = parent
@@ -159,7 +162,7 @@ class BPTree:
 
     def delete(self, value):
         # get the leaf node that might contain the value
-        key = value # In this project, we assume all key = value
+        key = value  # In this project, we assume all key = value
         leaf = self.search(value)
         delSuccess = False
         for i, item in enumerate(leaf.values):
@@ -168,17 +171,18 @@ class BPTree:
                 # The index() function is used to find the position of the first matching item of a value from a list.
                 # leaf.keys[i] is the data entry page, it removes the data of the matching item.
                 # check if more than one records sharing a pointer
-                if len(leaf.keys[i])>1:
+                if len(leaf.keys[i]) > 1:
                     # only delete the first matching item if there are multiple records
                     leaf.keys[i].pop(leaf.keys[i].index(key))
                 else:
                     leaf.keys[i].pop(leaf.keys[i].index(key))
-                    del leaf.keys[i]  #only one data record is using the pointer, it can be/should be deleted.
-                    leaf.values.pop(leaf.values.index(value)) # delete the index from the tree
+                    # only one data record is using the pointer, it can be/should be deleted.
+                    del leaf.keys[i]
+                    # delete the index from the tree
+                    leaf.values.pop(leaf.values.index(value))
 
         if delSuccess == False:
             print("Value not found.")
-
 
     def printTree(self):
         current = self.root
@@ -201,7 +205,7 @@ class BPTree:
             current = current.next
             token += str(current.keys)
         print(token)
-            
+
     def countLayer(self):
         current = self.root
         counter = 0
@@ -209,6 +213,7 @@ class BPTree:
             current = current.keys[0]
             counter += 1
         return counter
+
 
 class main():
     f = open("./test.txt", "r")
@@ -228,3 +233,23 @@ class main():
     # print("testing:", tree.root.keys[0].next.next.values)
     # print("testing:", tree.root.keys[1].next.next.next.values)
     # tree.printTree()
+
+
+def btree(fanme):
+    tree = BPTree(5)
+    start = True
+    with open(fanme, "w+", encoding='utf-8') as f:
+        for line in f:
+            f.readline
+        
+
+if __name__ == "__main__":
+    arg = str(sys.argv[1])
+    if arg == None:
+        print("Please input argument [fname] or -help for help")
+
+    if arg == "-help":
+        print(
+            "Usage: btree [fname] \n      fname: the name of the data file storing the search key values")
+    elif arg.endswith(".txt"):
+        btree(fanme=arg)
