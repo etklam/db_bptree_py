@@ -296,7 +296,7 @@ class BPTree:
                 if value>=minV and value <maxV:
                     keyArr.append(value)
                     if value > maxV:
-                        return keyArrS
+                        return keyArr
             current = current.next
             
         return keyArr
