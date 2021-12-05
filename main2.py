@@ -3,12 +3,13 @@ import os
 import sys
 import random
 ###############################
-###
-###
-###
-###
-###
-###
+#
+# Node: The basic element of a B Plus Tree
+# BPlusTree: A tree data structure, usually used in databases and operating system file systems
+# Values []: Human readable keys
+# Keys []: pointer to the node, a computer readable key
+# In this project, We assume each data records' (key, rid) are the same. Which means key = rid
+#
 ###############################
 
 
@@ -26,31 +27,35 @@ class Node:
     # Insert at the leaf
 
     def insert(self, leaf, value, key):
+        # insert function for the leaf, call by insert function of tree
         print("insert:", key)
-
         if (self.values):
-            temp = self.values
-            for i in range(len(temp)):
-                if (value == temp[i]):
-                    self.keys[i].append(key)
-                    print("after insert:", self.keys)
-                    break
-                elif (value < temp[i]):
-                    self.values = self.values[:i] + [value] + self.values[i:]
-                    self.keys = self.keys[:i] + [[key]] + self.keys[i:]
-                    print("after insert:", self.keys)
-                    break
-                elif (i + 1 == len(temp)):
-                    self.values.append(value)
-                    self.keys.append([key])
-                    print("after insert:", self.keys)
-                    break
+                temp = self.values
+                for i in range(len(temp)):
+                    if (value == temp[i]):
+                        # if there aleady a key in the tree, only append the data entry
+                        self.keys[i].append(key)
+                        print("after insert:", self.keys)
+                        break
+                    elif (value < temp[i]):
+
+                        self.values = self.values[:i] + [value] + self.values[i:]
+                        self.keys = self.keys[:i] + [[key]] + self.keys[i:]
+                        print("after insert:", self.keys)
+                        break
+                    elif (i + 1 == len(temp)):
+                        # insert to the end of array
+                        self.values.append(value)
+                        self.keys.append([key])
+                        print("after insert:", self.keys)
+                        break
         else:
             self.values = [value]
             self.keys = [[key]]
 
     def split(self):
         # split on Leaf
+        # There are two type of split, this one is split a leaf into two leaf
         node = self
         mid = node.maxLength // 2
         left = node
@@ -82,16 +87,23 @@ class Node:
 
 class BPTree:
     def __init__(self, maxLength=5):
+        # The master element of a tree
         self.root = Node(maxLength)
         self.root.isLeaf = True
         self.totalDataEntry = 0
 
+
     def insert(self, key, value=0):
+        # insert in the tree, call insert function in Node
+
+
         node = self.search(key)
         node.insert(node, value, key)
         self.totalDataEntry +=1
 
         # if > maxOrder:
+        # check if the node is full after insert
+        # split then update parent node recursively
         if (len(node.values) == node.maxLength):
             left, key, right = node.split()
             self.updateParent(left, key, right)
@@ -129,6 +141,8 @@ class BPTree:
                     self.updateParent(upLeft, [newKey], upRight)
 
     def split(self, node):
+        # the split function in the tree
+        # for spliting inner node rather than leaf node
         mid = node.maxLength // 2
         right = Node()
         left = node
@@ -160,7 +174,7 @@ class BPTree:
             for i in range(len(temp)):
                 # print("temp[i]:", value, str(temp[i]))
                 if (value == temp[i]):
-                    current = current.keys[i]
+                    current = current.keys[i + 1]
                     break
                 elif (value < temp[i]):
                     current = current.keys[i]
@@ -204,6 +218,9 @@ class BPTree:
                     #3. Borrow from right, only the left most Node can borrow and merge from right
                     #4. Merge with right, only the left most Node can borrow and merge from right
                     ###
+
+                    ###  The delete function bugs exist, I did not complete all 4 steps because time factor  ###
+                    ###  Some keys might not deleted
                     if len(leaf.values) < mid:
                         self.borrowFromLeft(leaf)
                         
@@ -224,6 +241,7 @@ class BPTree:
                 self.updateParentAfterDel(node, borrowV)
             else:
                 print("cannot borrow!, need merge")
+                self.merge()
 
     def merge(self):
         index = self.parent.index(self.values[0])
@@ -360,9 +378,10 @@ class main():
 
     tree.printTree()
     tree.printData()
-    tree.delete(8)
+    tree.delete(32)
     tree.printTree()
     tree.printData()
+
 
     #print(current.values)
     # while current.next!=None:
