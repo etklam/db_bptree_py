@@ -24,8 +24,17 @@ class Node:
         self.parent: Node = None
         self.isLeaf = False
 
-    # Insert at the leaf
+    def __getitem__(self, item):
+        return self.keys[self.index(item)]
 
+    def index(self, value):
+        for i, item in enumerate(self.values):
+            if value < item:
+                return i
+
+        return len(self.values)
+
+    # Insert at the leaf
     def insert(self, leaf, value, key):
         # insert function for the leaf, call by insert function of tree
         print("insert:", key)
@@ -72,7 +81,10 @@ class Node:
         print("left:", left.keys)
         print("right:", right.keys)
         print("key", right.values[0])
-        return left, right.keys[0], right
+        newKey = right.keys[0]
+        if newKey is list:
+            newKey = list(dict.fromkeys(newKey))
+        return left, newKey, right
 
     def printALayer(self):
         current = self
@@ -92,11 +104,11 @@ class BPTree:
         self.root.isLeaf = True
         self.totalDataEntry = 0
 
+    def __getitem__(self, item):
+        return self.keys[self.index(item)]
 
-    def insert(self, key, value=0):
+    def insert(self, key, value):
         # insert in the tree, call insert function in Node
-
-
         node = self.search(key)
         node.insert(node, value, key)
         self.totalDataEntry +=1
@@ -113,6 +125,7 @@ class BPTree:
         if(self.root == left):
             # this is a init split
             newRoot = Node()
+            print("key when update parent:", key)
             newRoot.values = key
             newRoot.keys = [left, right]
             self.root = newRoot
@@ -165,24 +178,32 @@ class BPTree:
         for child in parent.keys:
             child.parent = parent
 
+    # def search(self, value):
+    #     current = self.root
+    #     while not current.isLeaf:
+    #         temp = current.values
+    #         if type(temp) == int:
+    #             temp = [temp]
+    #         for i in range(len(temp)):
+    #             # print("temp[i]:", value, str(temp[i]))
+    #             if (value == temp[i]):
+    #                 current = current.keys[i + 1]
+    #                 break
+    #             elif (value < temp[i]):
+    #                 current = current.keys[i]
+    #                 break
+    #             elif (i + 1 == len(current.values)):
+    #                 current = current.keys[i + 1]
+    #                 break
+    #     return current
+
     def search(self, value):
-        current = self.root
-        while not current.isLeaf:
-            temp = current.values
-            if type(temp) == int:
-                temp = [temp]
-            for i in range(len(temp)):
-                # print("temp[i]:", value, str(temp[i]))
-                if (value == temp[i]):
-                    current = current.keys[i + 1]
-                    break
-                elif (value < temp[i]):
-                    current = current.keys[i]
-                    break
-                elif (i + 1 == len(current.values)):
-                    current = current.keys[i + 1]
-                    break
-        return current
+        node = self.root
+        # Traverse tree until leaf node is reached.
+        while node.isLeaf is False:
+            node = node[value]
+        return node
+
 
     def delete(self, value):
         # get the leaf node that might contain the value
@@ -241,8 +262,10 @@ class BPTree:
                 self.updateParentAfterDel(node, borrowV)
             else:
                 print("cannot borrow!, need merge")
-                self.merge()
-
+                try:
+                    self.merge()
+                except:
+                    print("The programme is still under develop that, the merge might not be working")
     def merge(self):
         index = self.parent.index(self.values[0])
         # merge with the prev node
@@ -280,7 +303,6 @@ class BPTree:
         current = self.root
         # print("root:", self.root.values)
         layer = self.countLayer()
-        print(layer)
         current.printALayer()
         for i in range(layer):
             current = current.keys[0]
@@ -334,12 +356,9 @@ class BPTree:
         fillFactor = float(indexCount)/float((totalNode*4))
         print("fillFactor:", fillFactor)
 
-
         # indexCount = len(indexEntrys)
         # print("index count", indexCount)
             
-
-
     def getAllLeftNode(self):
         arr = []
         current = self.root
@@ -358,13 +377,22 @@ class BPTree:
         
         while current.next != None:
             for value in current.values:
-                if value>=minV and value <maxV:
+                if value>=minV and value < maxV:
                     keyArr.append(value)
                     if value > maxV:
                         return keyArr
             current = current.next
             
         return keyArr
+
+    def printWelcome(self):
+        print(".______      .______    __       __    __       _______.   .___________..______       _______  _______     __    __   __  ___ .______    __    __  ")
+        print("|   _  \     |   _  \  |  |     |  |  |  |     /       |   |           ||   _  \     |   ____||   ____|   |  |  |  | |  |/  / |   _  \  |  |  |  | ")
+        print("|  |_)  |    |  |_)  | |  |     |  |  |  |    |   (----`   `---|  |----`|  |_)  |    |  |__   |  |__      |  |__|  | |  '  /  |  |_)  | |  |  |  | ")
+        print("|   _  <     |   ___/  |  |     |  |  |  |     \   \           |  |     |      /     |   __|  |   __|     |   __   | |    <   |   _  <  |  |  |  | ")
+        print("|  |_)  |    |  |      |  `----.|  `--'  | .----)   |          |  |     |  |\  \----.|  |____ |  |____    |  |  |  | |  .  \  |  |_)  | |  `--'  | ")
+        print("|______/     | _|      |_______| \______/  |_______/           |__|     | _| `._____||_______||_______|   |__|  |__| |__|\__\ |______/   \______/  ")
+        print("                                                                                                                                                   ")
 
 class main():
     f = open("./test.txt", "r")
@@ -375,13 +403,6 @@ class main():
         tree.printData()
 
     #current = tree.root.keys[0].printALayer()
-
-    tree.printTree()
-    tree.printData()
-    tree.delete(32)
-    tree.printTree()
-    tree.printData()
-
 
     #print(current.values)
     # while current.next!=None:
@@ -406,9 +427,12 @@ def btree(fanme):
             print("build initial tree error")
 
         print("Launching B+-Tree test program...")
+        tree.printWelcome()
+        tree.printTree()
+        tree.printData()
         while start:
             print("Waiting for your commands:")
-            i = input()
+            i = input(">>> ")
             cmd = i.split(" ")
             if cmd[0].lower() == "insert":
                 if len(cmd) < 4 or len(cmd) > 4:
@@ -447,6 +471,7 @@ def btree(fanme):
                     print("key in range: ", result)
             elif cmd[0].lower() == "print":
                 tree.printTree()
+                tree.printData()
             elif cmd[0].lower() == "stats":
                 print("Statistics of the B+-tree:")
                 tree.dumpStatistics()
@@ -467,3 +492,5 @@ if __name__ == "__main__":
             "Usage: btree [fname] \n      fname: the name of the data file storing the search key values")
     elif arg.endswith(".txt"):
         btree(fanme=arg)
+
+
