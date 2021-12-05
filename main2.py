@@ -399,8 +399,11 @@ def btree(fanme):
     start = True
     with open(fanme, "r", encoding='utf-8') as f:
         print("Building an initial B+-Tree...")
-        for line in f:
-            tree.insert(int(line), int(line))
+        try:
+            for line in f:
+                tree.insert(int(line), int(line))
+        except:
+            print("build initial tree error")
 
         print("Launching B+-Tree test program...")
         while start:
@@ -440,16 +443,13 @@ def btree(fanme):
                 else:
                     low = int(cmd[1])
                     high = int(cmd[2])
-                    result = tree.search(low)
-                    print("key in range: ", result.keys)
-                    # for i in range(low, high):
-                    #     result = tree.search(i)
-                    #     print("key in range: ", result.keys)
+                    result = tree.rangeSearch(low,high)
+                    print("key in range: ", result)
             elif cmd[0].lower() == "print":
                 tree.printTree()
             elif cmd[0].lower() == "stats":
-                # tree.dumpStatistic()
-                print("dump stat")
+                print("Statistics of the B+-tree:")
+                tree.dumpStatistics()
             elif cmd[0].lower() == "quit":
                 start = False
                 print("Thanks!Byebye")
