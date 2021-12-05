@@ -84,10 +84,12 @@ class BPTree:
     def __init__(self, maxLength=5):
         self.root = Node(maxLength)
         self.root.isLeaf = True
+        self.totalDataEntry = 0
 
     def insert(self, key, value=0):
         node = self.search(key)
         node.insert(node, value, key)
+        self.totalDataEntry +=1
 
         # if > maxOrder:
         if (len(node.values) == node.maxLength):
@@ -176,6 +178,7 @@ class BPTree:
         for i, item in enumerate(leaf.values):
             if item == value:
                 delSuccess = True
+                self.totalDataEntry -= 1
                 # remove the pointer of the data entry
                 # The index() function is used to find the position of the first matching item of a value from a list.
                 # leaf.keys[i] is the data entry page, it removes the data of the matching item.
@@ -285,6 +288,50 @@ class BPTree:
             counter += 1
         return counter
 
+    def dumpStatistics(self):
+        current = self.root
+        allLeftNode = self.getAllLeftNode()
+        heightOfTree = len(allLeftNode)
+        # print(allLeftNode)
+        print("height: ",heightOfTree)
+
+        nodeArray = []
+        for node in allLeftNode:
+            nodeArray.append(node)
+            while node.next!=None:
+                node = node.next
+                nodeArray.append(node)
+        
+        totalNode = len(nodeArray)
+        print("total node:", totalNode)
+
+        indexEntrys = []
+        for node in nodeArray:
+            for value in node.values:
+                indexEntrys.append(value)
+        indexCount = len(indexEntrys)
+        print("index count:", indexCount)
+        print("Total data Entry count:", self.totalDataEntry)
+
+        fillFactor = float(indexCount)/float((totalNode*4))
+        print("fillFactor:", fillFactor)
+
+
+        # indexCount = len(indexEntrys)
+        # print("index count", indexCount)
+            
+
+
+    def getAllLeftNode(self):
+        arr = []
+        current = self.root
+        arr.append(current)
+        while not current.isLeaf:
+            current = current.keys[0]
+            arr.append(current)
+        return arr 
+
+
     def rangeSearch(self, a, b):
         minV = min(a,b)
         maxV = max(a,b)+1
@@ -325,6 +372,7 @@ class main():
     # print("testing:", tree.root.keys[1].next.next.next.values)
     tree.printTree()
     print(tree.rangeSearch(7,20))
+    tree.dumpStatistics()
 
 
 def btree(fanme):
@@ -350,7 +398,7 @@ def btree(fanme):
                     high = int(cmd[2])
                     for i in range(int(cmd[3])):
                         key = random.randint(low, high)
-                        tree.insert(key=key)
+                        tree.insert(int(key), int(key))
                     print(
                         f"{cmd[3]} data entries with keys randomly chosen between [{low}, {high}] are inserted!")
             elif cmd[0].lower() == "delete":
@@ -379,7 +427,7 @@ def btree(fanme):
                     #     result = tree.search(i)
                     #     print("key in range: ", result.keys)
             elif cmd[0].lower() == "print":
-                tree.printData()
+                tree.printTree()
             elif cmd[0].lower() == "stats":
                 # tree.dumpStatistic()
                 print("dump stat")

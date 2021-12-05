@@ -212,7 +212,6 @@ class BTree(object):
 
     def insert(self, key, value):
         node = self.root
-
         # while not isinstance(node, LeafNode):  
         #     node, index = self.find(node, key)
         leaf = self.find(key)
@@ -222,16 +221,16 @@ class BTree(object):
             leaf.split()
         # node.insert(key, value)
 
-        # while len(node.keys) == node.maxLength:
-        #     if not node.isRoot():
-        #         parent = node.parent
-        #         node = node.split()
-        #         temp, index = self.find(parent, node.keys[0])
-        #         self.merge(parent, node, index)
-        #         node = parent
-        #     else:
-        #         node = node.split()
-        #         self.root = node
+        while len(node.keys) == node.maxLength:
+            if not node.isRoot():
+                parent = node.parent
+                node = node.split()
+                temp, index = self.find(parent, node.keys[0])
+                self.merge(parent, node, index)
+                node = parent
+            else:
+                node = node.split()
+                self.root = node
 
 
     def printChilds(self):
